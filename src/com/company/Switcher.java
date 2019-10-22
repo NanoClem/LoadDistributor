@@ -12,4 +12,11 @@ public class Switcher implements SwitcherInterface {
   public void check() {
     System.out.println("Check switcher ok");
   }
+
+  /**
+   *
+   */
+   public String hello(String name) {
+     return "Hello " + name;
+   }
 }
