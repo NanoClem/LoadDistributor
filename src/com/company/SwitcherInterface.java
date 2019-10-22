@@ -5,16 +5,7 @@ import java.rmi.RemoteException;
 /**
  *
  */
-// public class SwitcherInterface extends Machine, Control, Notif {
-//
-// }
-
-
-
-/**
- *
- */
-public class SwitcherInterface extends Remote {
+public interface SwitcherInterface extends Remote {
 
   /**
    *

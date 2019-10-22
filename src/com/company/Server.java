@@ -13,6 +13,8 @@ public class Server {
             SwitcherInterface skeleton = (SwitcherInterface) UnicastRemoteObject.exportObject(new Switcher(), 10000);   // Génère un stub vers notre service.
             Registry registry = LocateRegistry.createRegistry(10000);
             registry.rebind("Switcher", skeleton);                      // publie notre instance sous le nom "Switcher"
+
+            System.out.println("Server waiting on port 10000");
         } catch (Exception e) {
             e.printStackTrace();
         }
