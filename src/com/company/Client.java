@@ -15,8 +15,8 @@ public class Client {
         try {
             Registry registry = LocateRegistry.getRegistry(10000);                       // acces au registre sur le port 10000
             SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // choix de l'instance > on recherche l'object "switcher" qui a été bind
-            stub.check();                     // fonction appellee cote serveur
-            System.out.println(stub.hello("David"));
+            stub.check();                                                                // test affiche cote serveur
+            System.out.println(stub.hello("David"));                                     // EDIT : bon, mais c'est le serveur Machine qui doit renvoyer le resultat
 
         } catch (Exception e) {
             e.printStackTrace();

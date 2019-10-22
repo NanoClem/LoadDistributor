@@ -1,3 +1,4 @@
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -6,7 +7,7 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author NanoClem
  */
-public class Server {
+public class SwitcherServer {
     public static void main(String[] argv) {
         try {
         	// 10000 est le port sur lequel sera publié le service. Nous devons le préciser à la fois sur le registry et à la fois à la création du stub.
