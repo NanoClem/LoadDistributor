@@ -1,4 +1,4 @@
-package fr.debzoopman.rmiInterfaces;
+package fr.debzoopman.rmiinterfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

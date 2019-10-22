@@ -1,7 +1,7 @@
 package fr.debzoopman.rmiobj;
 
 import java.rmi.RemoteException;
-import fr.debzoopman.rmiInterfaces.SwitcherInterface;
+import fr.debzoopman.rmiinterfaces.SwitcherInterface;
 
 
 
