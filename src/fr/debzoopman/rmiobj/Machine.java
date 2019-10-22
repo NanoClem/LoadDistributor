@@ -1,3 +1,5 @@
+package fr.debzoopman.rmiobj;
+
 
 /**
  * 

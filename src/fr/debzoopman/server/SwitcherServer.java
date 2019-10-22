@@ -1,7 +1,12 @@
+package fr.debzoopman.server;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+
+import fr.debzoopman.rmiInterfaces.SwitcherInterface;
+import fr.debzoopman.rmiobj.Switcher;
 
 
 /**

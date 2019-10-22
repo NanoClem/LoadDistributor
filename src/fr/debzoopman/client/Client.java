@@ -1,3 +1,5 @@
+package fr.debzoopman.client;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
