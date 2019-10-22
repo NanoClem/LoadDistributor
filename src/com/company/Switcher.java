@@ -1,10 +1,15 @@
-// import Machine;
-// import Control;
-// import Notif;
+import java.rmi.RemoteException;
+
 
 /**
  *
  */
-public class Switcher extends Machine, Control, Notif {
+public class Switcher implements SwitcherInterface {
 
+  /**
+   *
+   */
+  public void check() {
+    System.out.println("Check switcher ok");
+  }
 }

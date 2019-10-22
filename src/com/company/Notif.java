@@ -1,5 +1,6 @@
 import javva.rmi.Remote;
-import Machine;
+import java.rmi.RemoteException;
+
 
 /**
  *
