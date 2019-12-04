@@ -1,5 +1,6 @@
-package app;
+package app.rmiobjects;
 
+import app.interfaces.SwitcherInterface;
 import java.rmi.RemoteException;
 
 

@@ -1,5 +1,6 @@
-package app;
+package app.interfaces;
 
+import app.rmiobjects.Machine;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

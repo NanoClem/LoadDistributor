@@ -1,5 +1,7 @@
 package app;
 
+import app.interfaces.SwitcherInterface;
+
 import java.util.Scanner;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -17,7 +19,7 @@ public class Client {
     public static void main(String[] argv) {
         try {
             Registry registry = LocateRegistry.getRegistry(10000);                       // acces au registre sur le port 10000
-            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // choix de l'instance > on recherche l'object "switcher" qui a été bind
+            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // demande d'acces a l'objet Switcher dans le registre
             stub.check();                                                                // test affiche cote serveur
             String userInput = test();
             System.out.println(stub.hello(userInput));                                   // EDIT : bon, mais c'est le serveur Machine qui doit renvoyer le resultat
@@ -34,6 +36,9 @@ public class Client {
     public static String test() {
         Scanner sc = new Scanner(System.in);
         System.out.println("What's your name ?");
-        return sc.nextLine();
+        String input = sc.nextLine();
+        sc.close();
+
+        return input;
     }
 }
