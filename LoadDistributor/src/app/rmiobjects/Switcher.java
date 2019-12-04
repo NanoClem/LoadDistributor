@@ -1,6 +1,8 @@
 package app.rmiobjects;
 
 import app.interfaces.SwitcherInterface;
+
+import java.util.ArrayList;
 import java.rmi.RemoteException;
 
 
@@ -17,15 +19,14 @@ public class Switcher implements SwitcherInterface {
   /**
    * Liste des machines connectees
    */
-  public Machine[] machines;
+  public ArrayList<Machine> machines;
 
 
   /**
    * CONSTRUCTEUR
-   * @param nbMachines
    */
   public Switcher() {
-    this.machines = new Machine[this.nbMachines];
+    this.machines = new ArrayList<Machine>();
   }
 
   /**
@@ -33,7 +34,7 @@ public class Switcher implements SwitcherInterface {
    */
   @Override
   public void check() throws RemoteException {
-    System.out.println("Check switcher ok");
+    System.out.println("Client connected to server");
   }
 
   /**
@@ -50,7 +51,7 @@ public class Switcher implements SwitcherInterface {
             MACHINE INTERFACE FUNCTIONS
   ===================================================== */
   /**
-   * @see MachineInterface#read
+   * Call the read function from a machine among the arraylist
    */
   @Override
   public byte[] read(String filename) throws RemoteException {
@@ -76,7 +77,8 @@ public class Switcher implements SwitcherInterface {
    */
   @Override
   public void addMachine(Machine m) throws RemoteException {
-
+    this.machines.add(m);
+    System.out.println("New machine connected, welcome machine " + m.getId());
   }
 
   /**
@@ -84,7 +86,7 @@ public class Switcher implements SwitcherInterface {
    */
   @Override
   public void removeMachine(Machine m) throws RemoteException {
-
+    this.machines.remove(m);
   }
 
 
