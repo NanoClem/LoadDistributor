@@ -9,6 +9,13 @@ import java.rmi.RemoteException;
 public interface MachineInterface extends Remote {
 
     /**
+     * Return the id of the machine
+     * @return (int)
+     * @throws RemoteException
+     */
+    public int getId() throws RemoteException;
+
+    /**
      * Lit et retourne le contenu du fichier passe en parametres
      * @param filename : chemin du fichier de lecture
      * @return : contenu du fichier sous forme de tableau d'octets

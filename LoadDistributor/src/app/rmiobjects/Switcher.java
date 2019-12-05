@@ -1,8 +1,10 @@
 package app.rmiobjects;
 
+import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 
 import java.util.ArrayList;
+
 import java.rmi.RemoteException;
 
 
@@ -12,6 +14,11 @@ import java.rmi.RemoteException;
 public class Switcher implements SwitcherInterface {
 
   /**
+   * Serial number
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
    * Nombre de machines gerees
    */
   private int nbMachines = 1;
@@ -19,14 +26,14 @@ public class Switcher implements SwitcherInterface {
   /**
    * Liste des machines connectees
    */
-  public ArrayList<Machine> machines;
+  public ArrayList<MachineInterface> machines;
 
 
   /**
    * CONSTRUCTEUR
    */
   public Switcher() {
-    this.machines = new ArrayList<Machine>();
+    this.machines = new ArrayList<MachineInterface>();
   }
 
   /**
@@ -39,17 +46,36 @@ public class Switcher implements SwitcherInterface {
 
   /**
    * PAS BIEN ICI, C'EST LA MACHINE QUI SE CHARGE DE CA
-   * @see SwitcherInterface#hello
+   * @see SwitcherInterface#hello()
    */
   @Override
-   public String hello(String name) throws RemoteException {
-     return "Hello " + name;
-   }
+  public String hello(String name) throws RemoteException {
+    return "Hello " + name;
+  }
+
+  /**
+   * @see SwitcherInterface#printMachines()
+   * @throws RemoteException
+   */
+  @Override
+  public String getMachines() throws RemoteException {
+    String ret = "";
+    for(MachineInterface m : this.machines) {
+      ret += "Machine " + m.getId() + " |";
+    }
+
+    return ret;
+  }
 
 
   /* =====================================================
             MACHINE INTERFACE FUNCTIONS
   ===================================================== */
+  @Override
+  public int getId() throws RemoteException {
+    return 0;
+  }
+
   /**
    * Call the read function from a machine among the arraylist
    */
@@ -76,7 +102,7 @@ public class Switcher implements SwitcherInterface {
    * @see ControlInterface#addMachine
    */
   @Override
-  public void addMachine(Machine m) throws RemoteException {
+  public void addMachine(MachineInterface m) throws RemoteException {
     this.machines.add(m);
     System.out.println("New machine connected, welcome machine " + m.getId());
   }
@@ -85,7 +111,7 @@ public class Switcher implements SwitcherInterface {
    * @see ControlInterface#removeMachine
    */
   @Override
-  public void removeMachine(Machine m) throws RemoteException {
+  public void removeMachine(MachineInterface m) throws RemoteException {
     this.machines.remove(m);
   }
 
@@ -100,4 +126,5 @@ public class Switcher implements SwitcherInterface {
   public void notifyLoad(Machine m, int load) throws RemoteException {
 
   }
+
 }

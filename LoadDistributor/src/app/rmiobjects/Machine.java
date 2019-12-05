@@ -2,13 +2,19 @@ package app.rmiobjects;
 
 import app.interfaces.MachineInterface;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
 
 /**
  * 
  */
-public class Machine implements MachineInterface {
+public class Machine implements MachineInterface, Serializable {
+
+    /**
+     * Serial number
+     */
+    private static final long serialVersionUID = 6918435107376120647L;
 
     /**
      * Unique identificator
@@ -25,8 +31,7 @@ public class Machine implements MachineInterface {
     }
 
     /**
-     * Get the id of the machine
-     * @return : (int)
+     * @see MachineInterface#getId()
      */
     public int getId() {
         return this.id;

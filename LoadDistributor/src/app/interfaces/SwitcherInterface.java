@@ -21,5 +21,11 @@ public interface SwitcherInterface extends MachineInterface, ControlInterface, N
    * @return
    * @throws RemoteException
    */
-   public String hello(String name) throws RemoteException;
+  public String hello(String name) throws RemoteException;
+
+  /**
+   * Print connected machines
+   * @throws RemoteException
+   */
+  public String getMachines() throws RemoteException;
 }
