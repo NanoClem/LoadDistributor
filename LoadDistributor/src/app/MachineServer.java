@@ -3,7 +3,6 @@ package app;
 import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 import app.rmiobjects.Machine;
-import app.rmiobjects.Switcher;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

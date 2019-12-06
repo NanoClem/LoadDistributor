@@ -1,7 +1,6 @@
 package app;
 
 import app.interfaces.SwitcherInterface;
-import app.rmiobjects.Switcher;
 
 import java.util.Scanner;
 import java.rmi.RemoteException;
