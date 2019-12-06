@@ -4,12 +4,13 @@ import app.interfaces.MachineInterface;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 
 /**
  * 
  */
-public class Machine implements MachineInterface, Serializable {
+public class Machine extends UnicastRemoteObject implements MachineInterface, Serializable {
 
     /**
      * Serial number
@@ -26,7 +27,7 @@ public class Machine implements MachineInterface, Serializable {
      * CONSTRUCTOR
      * @param num : unique identificator of the machine
      */
-    public Machine(int num) {
+    public Machine(int num) throws RemoteException {
         this.id = num;
     }
 
@@ -37,11 +38,18 @@ public class Machine implements MachineInterface, Serializable {
         return this.id;
     }
 
+    /**
+     * Set the id of the machine
+     * @param new_id
+     */
+    public void setId(int new_id) {
+
+    }
+
 
     /* =====================================================
             MACHINE INTERFACE FUNCTIONS
      ===================================================== */
-
     /**
      * @see MachineInterface#read(String)
      */

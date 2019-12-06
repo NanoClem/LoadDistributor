@@ -3,10 +3,11 @@ package app;
 import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 import app.rmiobjects.Machine;
+import app.rmiobjects.Switcher;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+
 
 
 
@@ -17,9 +18,10 @@ public class MachineServer {
 
     public static void main(String[] args) {
         try {
+            Registry registry = LocateRegistry.getRegistry(10000);   // get existing registry
+
             // BIND A NEW MACHINE ON THE REGISTRY
-            MachineInterface machineSkeleton = (MachineInterface) UnicastRemoteObject.exportObject(new Machine(1), 5000);
-            Registry registry = LocateRegistry.getRegistry(10000);      // get the existing registry
+            MachineInterface machineSkeleton = new Machine(1);
             registry.rebind("Machine", machineSkeleton);
             
             // ADD IT TO THE LIST IN THE SWITCHER

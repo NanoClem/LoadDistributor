@@ -1,6 +1,7 @@
 package app;
 
 import app.interfaces.SwitcherInterface;
+import app.rmiobjects.Switcher;
 
 import java.util.Scanner;
 import java.rmi.RemoteException;
@@ -20,9 +21,9 @@ public class Client {
     public static void main(String[] argv) {
         try {
             // INITIALISING SWITCHER
-            Registry registry = LocateRegistry.getRegistry(10000);                       // acces au registre sur le port 10000
-            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // demande d'acces a l'objet Switcher dans le registre
-            stub.check();                                                                // test affiche cote serveur
+            Registry registry = LocateRegistry.getRegistry(10000);     // acces au registre sur le port 10000
+            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // recupere l'objet Switcher dans le registre
+            stub.check();                                              // test affiche cote serveur
 
             // TESTS
             System.out.println("TEST 1");

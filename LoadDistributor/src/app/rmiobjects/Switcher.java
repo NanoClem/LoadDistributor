@@ -4,14 +4,15 @@ import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 
 import java.util.ArrayList;
-
+import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 
 /**
  *
  */
-public class Switcher implements SwitcherInterface {
+public class Switcher extends UnicastRemoteObject implements SwitcherInterface, Serializable {
 
   /**
    * Serial number
@@ -21,7 +22,7 @@ public class Switcher implements SwitcherInterface {
   /**
    * Nombre de machines gerees
    */
-  private int nbMachines = 1;
+  //private int nbMachines = 1;
 
   /**
    * Liste des machines connectees
@@ -32,7 +33,7 @@ public class Switcher implements SwitcherInterface {
   /**
    * CONSTRUCTEUR
    */
-  public Switcher() {
+  public Switcher() throws RemoteException {
     this.machines = new ArrayList<MachineInterface>();
   }
 
