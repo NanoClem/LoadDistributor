@@ -1,5 +1,7 @@
 package app.interfaces;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -16,12 +18,19 @@ public interface MachineInterface extends Remote {
     public int getId() throws RemoteException;
 
     /**
+     * Return the current load of the machine
+     * @return (int)
+     * @throws RemoteException
+     */
+    public int getLoad() throws RemoteException;
+    
+    /**
      * Lit et retourne le contenu du fichier passe en parametres
      * @param filename : chemin du fichier de lecture
      * @return : contenu du fichier sous forme de tableau d'octets
      * @throws RemoteException
      */
-    public byte[] read(String filename) throws RemoteException;
+    public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException;
 
     /**
      * Ecrit du contenu dans le fichier passe en parametre
@@ -30,5 +39,5 @@ public interface MachineInterface extends Remote {
      * @return : true si l'ecriture a reussi, false sinon
      * @throws RemoteException
      */
-    public boolean write(String filename, byte[] data) throws RemoteException;
+    public boolean write(String filename, byte[] data) throws RemoteException, IOException, FileNotFoundException;
 }

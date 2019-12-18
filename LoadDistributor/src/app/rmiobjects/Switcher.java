@@ -4,6 +4,8 @@ import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 
 import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -72,27 +74,50 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /* =====================================================
             MACHINE INTERFACE FUNCTIONS
   ===================================================== */
+  /**
+   * @see MachineInterface#getId()
+   */
   @Override
   public int getId() throws RemoteException {
     return 0;
   }
 
   /**
-   * Call the read function from a machine among the arraylist
+   * @see MachineInterface#getLoad()
    */
   @Override
-  public byte[] read(String filename) throws RemoteException {
-    byte[] tmp = new byte[1];
-    return tmp;
+  public int getLoad() throws RemoteException {
+    return 0;
   }
 
   /**
+   * Call the read function from a machine among the arraylist
+   * @see MachineInterface#read
+   */
+  @Override
+  public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
+    for(MachineInterface m : this.machines) {
+      // if(m.getLoad() <= 0) {
+      //   return m.read(filename);
+      // }
+      return m.read(filename);
+    }
+    return "All machines occupied".getBytes();  // No free loaded machine found
+  }
+
+  /**
+   * Call the write function from a machine among the arraylist
    * @see MachineInterface#write
    */
   @Override
-  public boolean write(String filename, byte[] data) throws RemoteException {
-    boolean tmp = true;
-    return tmp;
+  public boolean write(String filename, byte[] data) throws RemoteException, IOException, FileNotFoundException {
+    for(MachineInterface m : this.machines) {
+      // if(m.getLoad() <= 0) {
+      //   return m.write(filename, data);
+      // }
+      return m.write(filename, data);
+    }
+    return false;   // No free loaded machine found
   }
 
 
@@ -114,6 +139,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   public void removeMachine(MachineInterface m) throws RemoteException {
     this.machines.remove(m);
+    System.out.println("Machine removed, goodbye machine " + m.getId());
   }
 
 
