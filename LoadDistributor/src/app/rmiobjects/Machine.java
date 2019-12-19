@@ -102,27 +102,27 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     @Override
     public boolean write(String filename, byte[] data) throws RemoteException, IOException {
 
-        this.load += 1;
+        //this.load += 1;
 
         // PARAMS
-        URL fUrl = getClass().getResource(filename);
-        File f = new File(fUrl.getPath());
+        File f = new File(filename);
 
         // WRITE FILE
-        try(FileOutputStream fos = new FileOutputStream(f)) {
+        try(FileOutputStream fos = new FileOutputStream(filename)) {
             if (!f.exists()) {
                 f.createNewFile();
             }
             fos.write(data);
             fos.flush();
             fos.close();
+            return true;
         } 
-        catch (Exception e) {
+        catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-
-        this.load -= 1;
-        return true;
+        finally {
+            //this.load -= 1;
+        }
     }
 }
