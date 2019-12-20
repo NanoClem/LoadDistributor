@@ -4,11 +4,13 @@ import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.KeyStore.Entry;
 
 
 /**
@@ -22,21 +24,16 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   private static final long serialVersionUID = 1L;
 
   /**
-   * Nombre de machines gerees
+   * Map of machines and their load
    */
-  //private int nbMachines = 1;
-
-  /**
-   * Liste des machines connectees
-   */
-  public ArrayList<MachineInterface> machines;
+  public LinkedHashMap<MachineInterface, Integer> machines;
 
 
   /**
    * CONSTRUCTEUR
    */
   public Switcher() throws RemoteException {
-    this.machines = new ArrayList<MachineInterface>();
+    this.machines = new LinkedHashMap<MachineInterface, Integer>();
   }
 
   /**
@@ -63,7 +60,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   public String getMachines() throws RemoteException {
     String ret = "";
-    for(MachineInterface m : this.machines) {
+    for(MachineInterface m : this.machines.keySet()) {
       ret += "Machine " + m.getId() + " |";
     }
 
@@ -96,7 +93,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
-    for(MachineInterface m : this.machines) {
+    for(MachineInterface m : this.machines.keySet()) {
       // if(m.getLoad() <= 0) {
       //   return m.read(filename);
       // }
@@ -111,7 +108,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public boolean write(String filename, byte[] data) throws RemoteException, IOException, FileNotFoundException {
-    for(MachineInterface m : this.machines) {
+    for(MachineInterface m : this.machines.keySet()) {
       // if(m.getLoad() <= 0) {
       //   return m.write(filename, data);
       // }
@@ -129,7 +126,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public void addMachine(MachineInterface m) throws RemoteException {
-    this.machines.add(m);
+    this.machines.put(m, 0);
     System.out.println("New machine connected, welcome machine " + m.getId());
   }
 
