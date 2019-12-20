@@ -3,14 +3,13 @@ package app.rmiobjects;
 import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.security.KeyStore.Entry;
+
 
 
 /**
