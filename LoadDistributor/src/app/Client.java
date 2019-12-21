@@ -86,11 +86,16 @@ public class Client {
      * @throws RemoteException/IOException
      */
     public static void testWrite(SwitcherInterface s, String filename, byte[] data) throws RemoteException, IOException {
-        if(s.write(filename, data)) {
-            System.out.println("Data successfuly writen");
+        try {
+            if(s.write(filename, data)) {
+                System.out.println("Data successfuly writen");
+            }
+            else {
+                System.out.println("Write failed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        else {
-            System.out.println("Write failed");
-        }
+
     }
 }

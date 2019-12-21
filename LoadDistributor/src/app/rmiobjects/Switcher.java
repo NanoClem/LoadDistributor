@@ -62,7 +62,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
     for(MachineInterface m : this.machines.keySet()) {
       ret += "Machine " + m.getId() + " |";
     }
-
+    
     return ret;
   }
 
@@ -87,19 +87,35 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   }
 
   /**
+   * @see MachineInterface#addLoad()
+   */
+  @Override
+  public void addLoad(int l) throws RemoteException {
+
+  }
+
+
+  /**
    * Call the read function from a machine among the arraylist
    * @see MachineInterface#read
    */
   @Override
   public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
+
+    byte[] ret;
     for(MachineInterface m : this.machines.keySet()) {
-      // if(m.getLoad() <= 0) {
-      //   return m.read(filename);
-      // }
-      return m.read(filename);
+      // LOOKING FOR FREE LOADED MACHINE
+      if(this.machines.get(m) <= 0) {
+        this.notifyLoad(m, 1);    // load
+        ret = m.read(filename);
+        this.notifyLoad(m, -1);   // unload
+        return ret;
+      }
     }
-    return "All machines occupied".getBytes();  // No free loaded machine found
+    // NO MACHINE AVAILABLE
+    return "All machines occupied".getBytes();
   }
+
 
   /**
    * Call the write function from a machine among the arraylist
@@ -107,13 +123,19 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public boolean write(String filename, byte[] data) throws RemoteException, IOException, FileNotFoundException {
+
+    boolean ret;
     for(MachineInterface m : this.machines.keySet()) {
-      // if(m.getLoad() <= 0) {
-      //   return m.write(filename, data);
-      // }
-      return m.write(filename, data);
+      // LOOKING FOR FREE LOADED MACHINE
+      if(this.machines.get(m) <= 0) {
+        this.notifyLoad(m, 1);    // load
+        ret = m.write(filename, data);
+        this.notifyLoad(m, -1);   // unload
+        return ret;
+      }
     }
-    return false;   // No free loaded machine found
+    // NO MACHINE AVAILABLE
+    return false;
   }
 
 
@@ -146,8 +168,13 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    * @see NotifyInterface#notifyLoad
    */
   @Override
-  public void notifyLoad(Machine m, int load) throws RemoteException {
+  public void notifyLoad(MachineInterface m, int load) throws RemoteException {
+    // LOCAL LOAD
+    m.addLoad(load);
 
+    // SWITCHER LOAD
+    int oldLoad = this.machines.get(m);
+    this.machines.replace(m, oldLoad + load);
   }
 
 }

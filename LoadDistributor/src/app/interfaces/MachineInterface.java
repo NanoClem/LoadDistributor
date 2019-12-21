@@ -23,6 +23,13 @@ public interface MachineInterface extends Remote {
      * @throws RemoteException
      */
     public int getLoad() throws RemoteException;
+
+    /**
+     * Increase the load of the machine
+     * @param l
+     * @throws RemoteException
+     */
+    public void addLoad(int l) throws RemoteException;
     
     /**
      * Lit et retourne le contenu du fichier passe en parametres

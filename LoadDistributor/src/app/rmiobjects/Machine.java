@@ -43,7 +43,9 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     }
 
     /**
-     * @see MachineInterface#getId()
+     * Return the id of the machine
+     * @return (int)
+     * @throws RemoteException
      */
     public int getId() {
         return this.id;
@@ -53,15 +55,32 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * Return the current load of the machine
      * @return (int) load
      */
-    public int getLoad() {
+    public int getLoad() throws RemoteException {
         return this.load;
+    }
+
+    /**
+     * @see MachineInterface#addLoad()
+     */
+    @Override
+    public void addLoad(int l) throws RemoteException {
+        this.load = l;
+    }
+
+    /**
+     * Set a new load for the machine
+     * @param newLoad
+     * @throws RemoteException
+     */
+    public void setLoad(int newLoad) throws RemoteException {
+        this.load = newLoad;
     }
 
     /**
      * Set the id of the machine
      * @param new_id
      */
-    public void setId(int new_id) {
+    public void setId(int new_id) throws RemoteException {
         this.id = new_id;
     }
 
@@ -74,8 +93,6 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
-
-        //this.load += 1;
 
         // PARAMS
         URL fUrl = getClass().getResource(filename);
@@ -91,7 +108,6 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
             e.printStackTrace();
         }
 
-        //this.load -= 1;
         return ret;
     }
 
@@ -101,8 +117,6 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public boolean write(String filename, byte[] data) throws RemoteException, IOException {
-
-        //this.load += 1;
 
         // PARAMS
         File f = new File(filename);
@@ -120,9 +134,6 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
         catch (IOException e) {
             e.printStackTrace();
             return false;
-        }
-        finally {
-            //this.load -= 1;
         }
     }
 }
