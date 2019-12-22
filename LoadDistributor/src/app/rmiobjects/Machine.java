@@ -29,6 +29,11 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     private int id;
 
     /**
+     * Name of the machine
+     */
+    public String surname;
+
+    /**
      * Amount of load
      */
     private int load = 0;
@@ -37,9 +42,11 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     /**
      * CONSTRUCTOR
      * @param num : unique identificator of the machine
+     * @param name : name of the machine
      */
-    public Machine(int num) throws RemoteException {
+    public Machine(int num, String name) throws RemoteException {
         this.id = num;
+        this.surname = name;
     }
 
     /**
@@ -60,9 +67,19 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     }
 
     /**
-     * @see MachineInterface#addLoad()
+     * Return the name of the machine
+     * @return (String)
+     * @throws RemoteException
      */
-    @Override
+    public String getSurname() throws RemoteException {
+        return this.surname;
+    }
+
+    /**
+     * Increase the load of the machine
+     * @param l
+     * @throws RemoteException
+     */
     public void addLoad(int l) throws RemoteException {
         this.load = l;
     }
@@ -77,11 +94,20 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     }
 
     /**
-     * Set the id of the machine
+     * Set a new id for the machine
      * @param new_id
      */
     public void setId(int new_id) throws RemoteException {
         this.id = new_id;
+    }
+
+    /**
+     * Set a new name for the machine
+     * @param new_name
+     * @throws RemoteException
+     */
+    public void setSurname(String new_name) throws RemoteException {
+        this.surname = new_name;
     }
 
 
@@ -89,6 +115,16 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
             MACHINE INTERFACE FUNCTIONS
      ===================================================== */
     /**
+     * Say hello
+     * @see MachineInterface#hello()
+     */
+    @Override
+    public String hello(String name) throws RemoteException {
+        return new StringBuilder().append(this.surname).append("greets you, ").append(name).toString();
+    }
+
+    /**
+     * Read a file's content
      * @see MachineInterface#read(String)
      */
     @Override
@@ -113,6 +149,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
 
 
     /**
+     * Write content into a file
      * @see MachineInterface#write(String, byte[])
      */
     @Override

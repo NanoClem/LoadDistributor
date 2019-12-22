@@ -1,6 +1,5 @@
 package app;
 
-import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 import app.rmiobjects.Machine;
 
@@ -20,8 +19,8 @@ public class MachineServer {
             Registry registry = LocateRegistry.getRegistry(10000);   // get existing registry
 
             // BIND A NEW MACHINE ON THE REGISTRY
-            MachineInterface machineSkeleton = new Machine(1);
-            registry.rebind("Machine", machineSkeleton);
+            Machine machineSkeleton = new Machine(1, "Kave");
+            registry.rebind("rmi://localhost:10000/Machine/" + machineSkeleton.getSurname(), machineSkeleton);
             
             // ADD IT TO THE LIST IN THE SWITCHER
             SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");

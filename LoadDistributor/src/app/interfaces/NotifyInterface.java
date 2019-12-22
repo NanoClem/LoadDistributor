@@ -1,6 +1,7 @@
 package app.interfaces;
 
-import app.interfaces.MachineInterface;
+import app.rmiobjects.Machine;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -11,10 +12,10 @@ import java.rmi.RemoteException;
 public interface NotifyInterface extends Remote {
 
     /**
-     * Informe de la charge d'une machine
+     * Inform the load carried by a machine
      * @param m : machine concernee
      * @param load : charge
      * @throws RemoteException
      */
-    public void notifyLoad(MachineInterface m, int load) throws RemoteException;
+    public void notifyLoad(Machine m, int load) throws RemoteException;
 }

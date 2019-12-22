@@ -1,6 +1,7 @@
 package app;
 
 import app.interfaces.SwitcherInterface;
+import app.rmiobjects.Machine;
 
 import java.util.Scanner;
 import java.io.IOException;
@@ -15,33 +16,40 @@ import java.rmi.registry.Registry;
 public class Client {
     public static void main(String[] argv) {
         try {
-            // INITIALISING SWITCHER
-            Registry registry = LocateRegistry.getRegistry(10000);                       // acces au registre sur le port 10000
-            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // recupere l'objet Switcher dans le registre
-            stub.check();                                                                // test cote serveur
+            /* -------------------------------
+                INITIALISING STUB
+            ------------------------------- */
+            Registry registry = LocateRegistry.getRegistry(10000);                       // access to registry on port 10000
+            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // get the "Switcher" object in registry 
+            stub.check();                                                                // server side test
 
-            // SIMPLE TESTS
+            /* -------------------------------
+                SIMPLE TESTS
+            ------------------------------- */
             System.out.println("TEST 1");
-            test1(stub);    // test 1 : say Hello         
+            test1(stub);                     // test 1 : say Hello         
             System.out.println("TEST 2");
-            test2(stub);    // test 2 : print connected machines 
+            test2(stub);                     // test 2 : print connected machines 
 
-            // READING AND WRITING TEST
+           /* -------------------------------
+                READ AND WRITE TEST
+            ------------------------------- */
             //read test
             String freadname = "read_test.txt";
             System.out.println("READING TEST");
             testRead(stub, freadname);
+
             //write test
             String fwritename = "write_test.txt";
             byte[] data = "writing test".getBytes();
             System.out.println("WRITING TEST");
             testWrite(stub, fwritename, data);
-
-
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     /* =======================================
             TEST FUNCTIONS
@@ -52,6 +60,7 @@ public class Client {
      * @throws RemoteException
      */
     public static void test1(SwitcherInterface s) throws RemoteException {
+
         Scanner sc = new Scanner(System.in);
         System.out.println("What's your name ?");
         String input = sc.nextLine();
@@ -59,14 +68,21 @@ public class Client {
         System.out.println(s.hello(input));
     }
 
+
     /**
      * Test 2 : print connected machines
      * @param s
      * @throws RemoteException
     */
     public static void test2(SwitcherInterface s) throws RemoteException {
-        System.out.println(s.getMachines());
+
+        StringBuilder str = (new StringBuilder());
+        for(Machine m : s.getMachines().keySet()) {
+            str.append(m.getSurname()).append(":").append(m.getId()).append(" ").append(m.getLoad()).append(" | ");
+        }
+        System.out.println(str);
     }
+
 
     /**
      * Reading test
@@ -78,6 +94,7 @@ public class Client {
         String fcontent = new String(s.read(filename));
         System.out.println(fcontent);
     }
+
 
     /**
      * Writing test

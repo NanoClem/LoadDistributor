@@ -1,6 +1,9 @@
 package app.interfaces;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
+
+import app.rmiobjects.Machine;
 
 
 
@@ -16,16 +19,8 @@ public interface SwitcherInterface extends MachineInterface, ControlInterface, N
   public void check() throws RemoteException;
 
   /**
-   * PAS BIEN ICI, C'EST LA MACHINE QUI SE CHARGE DE CA
-   * @param name
-   * @return
+   * Return a deep copy of the machines container
    * @throws RemoteException
    */
-  public String hello(String name) throws RemoteException;
-
-  /**
-   * Print connected machines
-   * @throws RemoteException
-   */
-  public String getMachines() throws RemoteException;
+  public HashMap<Machine, Integer> getMachines() throws RemoteException;
 }
