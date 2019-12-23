@@ -49,16 +49,14 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   }
 
   /**
-   * Returns the Switcher's id
-   * @return (int)
+   * @return switcher's id
    */
   public int getId() {
     return this.id;
   }
 
   /**
-   * Returns the Switcher's surname
-   * @return (int)
+   * @return switcher's surname
    */
   public String getSurname() {
     return this.surname;
@@ -117,7 +115,19 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public String hello(String name) throws RemoteException {
-    return "Hello" + name + " ! From " + this.surname;
+    
+    String ret = "";
+    for(MachineInterface m : this.machines.keySet()) {
+      // LOOKING FOR FREE LOADED MACHINE
+      if(this.machines.get(m) <= 0) {
+        this.notifyLoad(m, 1);    // load
+        ret = m.hello(name);
+        this.notifyLoad(m, -1);   // unload
+        return ret;
+      }
+    }
+    // NO MACHINE AVAILABLE
+    return "All machines occupied";
   }
 
   /**

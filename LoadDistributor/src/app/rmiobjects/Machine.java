@@ -148,7 +148,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     @Override
     public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
 
-        System.out.println("Reading from" + filename);
+        System.out.println("Reading from " + filename);
 
         // PARAMS
         URL fUrl = getClass().getResource(filename);
