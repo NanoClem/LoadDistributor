@@ -1,7 +1,7 @@
 package app;
 
+import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
-import app.rmiobjects.Machine;
 
 import java.util.Scanner;
 import java.io.IOException;
@@ -77,10 +77,10 @@ public class Client {
     public static void test2(SwitcherInterface s) throws RemoteException {
 
         StringBuilder str = (new StringBuilder());
-        for(Machine m : s.getMachines().keySet()) {
+        for(MachineInterface m : s.getMachines().keySet()) {
             str.append(m.getSurname()).append(":").append(m.getId()).append(" ").append(m.getLoad()).append(" | ");
         }
-        System.out.println(str);
+        System.out.println(str.toString());
     }
 
 
