@@ -45,6 +45,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * @param name : name of the machine
      */
     public Machine(int num, String name) throws RemoteException {
+        super();
         this.id = num;
         this.surname = name;
     }
@@ -53,15 +54,20 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * Return the id of the machine
      * @return (int)
      * @throws RemoteException
+     * @see MachineInterface#getId()
      */
-    public int getId() {
+    @Override
+    public int getId() throws RemoteException {
         return this.id;
     }
 
     /**
      * Return the current load of the machine
      * @return (int) load
+     * @throws RemoteException
+     * @see MachineInterface#getLoad()
      */
+    @Override
     public int getLoad() throws RemoteException {
         return this.load;
     }
@@ -70,7 +76,9 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * Return the name of the machine
      * @return (String)
      * @throws RemoteException
+     * @see MachineInterface#getSurname()
      */
+    @Override
     public String getSurname() throws RemoteException {
         return this.surname;
     }
@@ -79,7 +87,9 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * Increase the load of the machine
      * @param l
      * @throws RemoteException
+     * @see MachineInterface#addLoad()
      */
+    @Override
     public void addLoad(int l) throws RemoteException {
         this.load = l;
     }
@@ -88,7 +98,9 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * Set a new load for the machine
      * @param newLoad
      * @throws RemoteException
+     * @see MachineInterface#setLoad()
      */
+    @Override
     public void setLoad(int newLoad) throws RemoteException {
         this.load = newLoad;
     }
@@ -96,7 +108,10 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     /**
      * Set a new id for the machine
      * @param new_id
+     * @throws RemoteException
+     * @see MachineInterface#setId()
      */
+    @Override
     public void setId(int new_id) throws RemoteException {
         this.id = new_id;
     }
@@ -105,7 +120,9 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * Set a new name for the machine
      * @param new_name
      * @throws RemoteException
+     * @see MachineInterface#setSurname()
      */
+    @Override
     public void setSurname(String new_name) throws RemoteException {
         this.surname = new_name;
     }
@@ -120,6 +137,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public String hello(String name) throws RemoteException {
+        System.out.println("Saying hello to " + name);
         return new StringBuilder().append(this.surname).append("greets you, ").append(name).toString();
     }
 
@@ -129,6 +147,8 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
+
+        System.out.println("Reading from" + filename);
 
         // PARAMS
         URL fUrl = getClass().getResource(filename);
@@ -154,6 +174,8 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public boolean write(String filename, byte[] data) throws RemoteException, IOException {
+
+        System.out.println("Writing in " + filename);
 
         // PARAMS
         File f = new File(filename);

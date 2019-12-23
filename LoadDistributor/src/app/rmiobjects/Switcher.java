@@ -35,16 +35,17 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /**
    * Map of machines and their load
    */
-  public HashMap<Machine, Integer> machines;
+  public HashMap<MachineInterface, Integer> machines;
 
 
   /**
    * CONSTRUCTOR
    */
   public Switcher(int num, String name) throws RemoteException {
+    super();
     this.id       = num;
     this.surname  = name;
-    this.machines = new HashMap<Machine, Integer>();
+    this.machines = new HashMap<MachineInterface, Integer>();
   }
 
   /**
@@ -80,7 +81,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /**
    * @param machines the machines to set
    */
-  public void setMachines(HashMap<Machine, Integer> machines) {
+  public void setMachines(HashMap<MachineInterface, Integer> machines) {
     this.machines = machines;
   }
 
@@ -116,7 +117,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public String hello(String name) throws RemoteException {
-    return "Hello from " + name;
+    return "Hello" + name + " ! From " + this.surname;
   }
 
   /**
@@ -127,7 +128,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
 
     byte[] ret;
-    for(Machine m : this.machines.keySet()) {
+    for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
         this.notifyLoad(m, 1);    // load
@@ -149,7 +150,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   public boolean write(String filename, byte[] data) throws RemoteException, IOException, FileNotFoundException {
 
     boolean ret;
-    for(Machine m : this.machines.keySet()) {
+    for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
         this.notifyLoad(m, 1);    // load
@@ -170,18 +171,18 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    * @see ControlInterface#addMachine
    */
   @Override
-  public void addMachine(Machine m) throws RemoteException {
+  public void addMachine(MachineInterface m) throws RemoteException {
     this.machines.put(m, 0);
-    System.out.println("New machine connected, welcome machine " + m.getId());
+    System.out.println("New machine connected, welcome " + m.getSurname());
   }
 
   /**
    * @see ControlInterface#removeMachine
    */
   @Override
-  public void removeMachine(Machine m) throws RemoteException {
+  public void removeMachine(MachineInterface m) throws RemoteException {
     this.machines.remove(m);
-    System.out.println("Machine removed, goodbye machine " + m.getId());
+    System.out.println("Machine removed, goodbye " + m.getSurname());
   }
 
 
@@ -192,7 +193,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    * @see NotifyInterface#notifyLoad
    */
   @Override
-  public void notifyLoad(Machine m, int load) throws RemoteException {
+  public void notifyLoad(MachineInterface m, int load) throws RemoteException {
     // LOCAL LOAD
     m.addLoad(load);
 
