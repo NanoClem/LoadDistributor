@@ -3,8 +3,6 @@ package app.interfaces;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
-import app.rmiobjects.Machine;
-
 
 
 /**
@@ -13,14 +11,26 @@ import app.rmiobjects.Machine;
 public interface SwitcherInterface extends OperationsInterface, ControlInterface, NotifyInterface {
 
   /**
-   * Affiche un message de verification sur le switcher (si le client a bien acces au Switcher)
+   * @return switcher's id
+   * @throws RemoteException
+   */
+  public int getId() throws RemoteException;
+
+  /**
+   * @return switcher's surname
+   * @throws RemoteException
+   */
+  public String getSurname() throws RemoteException;
+
+  /**
+   * Print a verification message
    * @throws RemoteException
    */
   public void check() throws RemoteException;
 
   /**
-   * Return a shallow copy of the machines container
+   * @return a shallow copy of the machines container
    * @throws RemoteException
    */
-  public HashMap<Machine, Integer> getMachines() throws RemoteException;
+  public HashMap<MachineInterface, Integer> getMachines() throws RemoteException;
 }

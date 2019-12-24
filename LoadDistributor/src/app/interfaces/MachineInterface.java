@@ -35,25 +35,4 @@ public interface MachineInterface extends Remote, OperationsInterface {
      * @throws RemoteException
      */
     public void addLoad(int l) throws RemoteException;
-
-    /**
-     * Set a new load for the machine
-     * @param newLoad to set
-     * @throws RemoteException
-     */
-    public void setLoad(int newLoad) throws RemoteException;
-
-    /**
-     * Set a new id for the machine
-     * @param new_id to set
-     * @throws RemoteException
-     */
-    public void setId(int new_id) throws RemoteException;
-
-    /**
-     * Set a new name for the machine
-     * @param new_name to set
-     * @throws RemoteException
-     */
-    public void setSurname(String new_name) throws RemoteException;
 }

@@ -50,37 +50,42 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
   /**
    * @return switcher's id
+   * @throws RemoteException
+   * @see SwitcherInterface#getId()
    */
-  public int getId() {
+  public int getId() throws RemoteException {
     return this.id;
   }
 
   /**
    * @return switcher's surname
+   * @throws RemoteException
+   * @see SwitcherInterface#getSurname()
    */
-  public String getSurname() {
+  public String getSurname() throws RemoteException {
     return this.surname;
   }
 
   /**
    * @param id the id to set
    */
-  public void setId(int new_id) {
+  public void setId(int new_id) throws RemoteException {
     this.id = new_id;
   }
 
   /**
    * @param surname the surname to set
    */
-  public void setSurname(String new_surname) {
+  public void setSurname(String new_surname) throws RemoteException {
     this.surname = new_surname;
   }
 
   /**
    * @param machines the machines to set
    */
-  public void setMachines(HashMap<MachineInterface, Integer> machines) {
-    this.machines = machines;
+  @SuppressWarnings("unchecked")
+  public void setMachines(HashMap<MachineInterface, Integer> machines) throws RemoteException {
+    this.machines = (HashMap<MachineInterface, Integer>) machines.clone(); 
   }
 
 
@@ -101,8 +106,8 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   @SuppressWarnings("unchecked")
-  public HashMap<Machine, Integer> getMachines() throws RemoteException {
-    return (HashMap<Machine, Integer>) this.machines.clone();
+  public HashMap<MachineInterface, Integer> getMachines() throws RemoteException {
+    return (HashMap<MachineInterface, Integer>) this.machines.clone();
   }
 
 
@@ -129,6 +134,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
     // NO MACHINE AVAILABLE
     return "All machines occupied";
   }
+
 
   /**
    * Call the read function from a machine among the arraylist
