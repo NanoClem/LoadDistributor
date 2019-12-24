@@ -30,7 +30,7 @@ public class ClientServer {
             stub.check();                                                                // server side test
 
             /* -------------------------------
-                SIMPLE TESTS
+                HELLO TEST
             ------------------------------- */
             System.out.println("HELLO TEST");
             helloTest(stub, client);
