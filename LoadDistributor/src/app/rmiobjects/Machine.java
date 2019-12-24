@@ -1,5 +1,6 @@
 package app.rmiobjects;
 
+import app.interfaces.ClientInterface;
 import app.interfaces.MachineInterface;
 
 import java.io.File;
@@ -125,15 +126,21 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     public void addLoad(int l) throws RemoteException {
         this.load = l;
     }
+
+
+    /* =====================================================
+            OPERATION INTERFACE FUNCTIONS
+     ===================================================== */
      
     /**
      * Say hello
      * @see MachineInterface#hello()
      */
     @Override
-    public String hello(String name) throws RemoteException {
+    public boolean hello(String name, ClientInterface c) throws RemoteException {
         System.out.println("Saying hello to " + name);
-        return new StringBuilder().append(this.surname).append(" greets you, ").append(name).toString();
+        c.setHelloResponse("Hello " + c.getSurname() + " ! From " + this.getSurname());
+        return true;
     }
 
     
@@ -142,22 +149,28 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * @see MachineInterface#read(String)
      */
     @Override
-    public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
+    public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
         System.out.println("Reading from " + filename);
 
         // PARAMS
-        URL fUrl = getClass().getResource(filename);
-        File f = new File(fUrl.getPath());
-        byte[] ret = new byte[(int) f.length()];
+        URL fUrl    = getClass().getResource(filename);
+        File f      = new File(fUrl.getPath());
+        byte[] resp = new byte[(int) f.length()];
+        boolean ret = false;
 
         // READ FILE
         try(FileInputStream fis = new FileInputStream(f)) {
-            fis.read(ret);
+            fis.read(resp);
             fis.close();
+            ret = true;
         } 
         catch (IOException e) {
             e.printStackTrace();
+            ret = false;
+        }
+        finally {
+            c.setReadResponse(resp);
         }
 
         return ret;
@@ -169,12 +182,13 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      * @see MachineInterface#write(String, byte[])
      */
     @Override
-    public boolean write(String filename, byte[] data) throws RemoteException, IOException {
+    public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException {
 
         System.out.println("Writing in " + filename);
 
         // PARAMS
-        File f = new File(filename);
+        File f      = new File(filename);
+        boolean ret = false;
 
         // WRITE FILE
         try(FileOutputStream fos = new FileOutputStream(filename)) {
@@ -184,11 +198,16 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
             fos.write(data);
             fos.flush();
             fos.close();
-            return true;
+            ret = true;
         } 
         catch (IOException e) {
             e.printStackTrace();
-            return false;
+            ret = false;
         }
+        finally {
+            c.setWriteResponse(ret);
+        }
+
+        return ret;
     }
 }

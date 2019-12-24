@@ -1,5 +1,6 @@
 package app.rmiobjects;
 
+import app.interfaces.ClientInterface;
 import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 
@@ -112,27 +113,27 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
 
   /* =====================================================
-            MACHINE INTERFACE FUNCTIONS
+            OPERATION INTERFACE FUNCTIONS
   ===================================================== */
 
   /**
    * @see MachinerInterface#hello()
    */
   @Override
-  public String hello(String name) throws RemoteException {
+  public boolean hello(String name, ClientInterface c) throws RemoteException {
     
-    String ret = "";
+    boolean ret = false;
     for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
         this.notifyLoad(m, 1);    // load
-        ret = m.hello(name);
+        ret = m.hello(name, c);
         this.notifyLoad(m, -1);   // unload
-        return ret;
+        break;
       }
     }
-    // NO MACHINE AVAILABLE
-    return "All machines occupied";
+
+    return ret;
   }
 
 
@@ -141,20 +142,20 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    * @see MachineInterface#read
    */
   @Override
-  public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException {
+  public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
-    byte[] ret;
+    boolean ret = false;
     for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
         this.notifyLoad(m, 1);    // load
-        ret = m.read(filename);
+        ret = m.read(filename, c);
         this.notifyLoad(m, -1);   // unload
-        return ret;
+        break;
       }
     }
-    // NO MACHINE AVAILABLE
-    return "All machines occupied".getBytes();
+
+    return ret;
   }
 
 
@@ -163,20 +164,20 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    * @see MachineInterface#write
    */
   @Override
-  public boolean write(String filename, byte[] data) throws RemoteException, IOException, FileNotFoundException {
+  public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
-    boolean ret;
+    boolean ret = false;
     for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
         this.notifyLoad(m, 1);    // load
-        ret = m.write(filename, data);
+        ret = m.write(filename, data, c);
         this.notifyLoad(m, -1);   // unload
-        return ret;
+        break;
       }
     }
-    // NO MACHINE AVAILABLE
-    return false;
+
+    return ret;
   }
 
 
