@@ -1,7 +1,8 @@
 package app;
 
-import app.interfaces.MachineInterface;
+import app.interfaces.ClientInterface;
 import app.interfaces.SwitcherInterface;
+import app.rmiobjects.Client;
 
 import java.util.Scanner;
 import java.io.IOException;
@@ -13,9 +14,14 @@ import java.rmi.registry.Registry;
 /**
  * @author NanoClem
  */
-public class Client {
+public class ClientServer {
     public static void main(String[] argv) {
         try {
+            /* -------------------------------
+                INITIALISING CLIENT
+            ------------------------------- */
+            Client client = new Client(1, "Pedro");
+
             /* -------------------------------
                 INITIALISING STUB
             ------------------------------- */
@@ -26,10 +32,8 @@ public class Client {
             /* -------------------------------
                 SIMPLE TESTS
             ------------------------------- */
-            System.out.println("TEST 1");
-            test1(stub);                     // test 1 : say Hello         
-            System.out.println("TEST 2");
-            test2(stub);                     // test 2 : print connected machines 
+            System.out.println("HELLO TEST");
+            helloTest(stub, client);
 
            /* -------------------------------
                 READ AND WRITE TEST
@@ -37,13 +41,13 @@ public class Client {
             //read test
             String freadname = "read_test.txt";
             System.out.println("READING TEST");
-            testRead(stub, freadname);
+            readTest(stub, freadname, client);
 
             //write test
             String fwritename = "write_test.txt";
-            byte[] data = "writing test".getBytes();
+            byte[] data = "This is a write test".getBytes();
             System.out.println("WRITING TEST");
-            testWrite(stub, fwritename, data);
+            writeTest(stub, fwritename, data, client);
         } 
         catch (Exception e) {
             e.printStackTrace();
@@ -54,65 +58,65 @@ public class Client {
     /* =======================================
             TEST FUNCTIONS
     ======================================= */
+
     /**
-     * Test 1 : say hello
+     * HELLO TEST
      * @param s
+     * @param c
      * @throws RemoteException
      */
-    public static void test1(SwitcherInterface s) throws RemoteException {
+    public static void helloTest(SwitcherInterface s, ClientInterface c) throws RemoteException {
 
         Scanner sc = new Scanner(System.in);
         System.out.println("What's your name ?");
         String input = sc.nextLine();
         sc.close();
-        System.out.println(s.hello(input));
+
+        s.hello(input, c);
+        System.out.println(c.getHelloResponse());
     }
 
 
     /**
-     * Test 2 : print connected machines
+     * READING TEST
      * @param s
+     * @param filename
+     * @param c
      * @throws RemoteException
-    */
-    public static void test2(SwitcherInterface s) throws RemoteException {
-
-        StringBuilder str = (new StringBuilder());
-        for(MachineInterface m : s.getMachines().keySet()) {
-            str.append(m.getSurname()).append(":").append(m.getId()).append(" ").append(m.getLoad()).append(" | ");
-        }
-        System.out.println(str.toString());
-    }
-
-
-    /**
-     * Reading test
-     * @param s
-     * @return byte[]
-     * @throws RemoteException/IOException
+     * @throws IOException
      */
-    public static void testRead(SwitcherInterface s, String filename) throws RemoteException, IOException {
-        String fcontent = new String(s.read(filename));
-        System.out.println(fcontent);
-    }
-
-
-    /**
-     * Writing test
-     * @param s
-     * @return boolean
-     * @throws RemoteException/IOException
-     */
-    public static void testWrite(SwitcherInterface s, String filename, byte[] data) throws RemoteException, IOException {
+    public static void readTest(SwitcherInterface s, String filename, ClientInterface c) throws RemoteException, IOException {
         try {
-            if(s.write(filename, data)) {
-                System.out.println("Data successfuly writen");
+            if(s.read(filename, c)) {
+                System.out.println(new String(c.getReadResponse()));
+            } else {
+                System.out.println("Read failed");
             }
-            else {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * WRITING TEST
+     * @param s
+     * @param filename
+     * @param data
+     * @param c
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public static void writeTest(SwitcherInterface s, String filename, byte[] data, ClientInterface c) throws RemoteException, IOException {
+        try {
+            if(s.write(filename, data, c)) {
+                System.out.println("Data successfuly writen");
+            } else {
                 System.out.println("Write failed");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
+
 }

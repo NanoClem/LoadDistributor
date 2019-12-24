@@ -19,7 +19,7 @@ public interface OperationsInterface extends Remote {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public byte[] read(String filename) throws RemoteException, IOException, FileNotFoundException;
+    public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException;
 
     /**
      * Declare behaviour for a write operation
@@ -30,7 +30,7 @@ public interface OperationsInterface extends Remote {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public boolean write(String filename, byte[] data) throws RemoteException, IOException, FileNotFoundException;
+    public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException;
 
     /**
      * Say hello
@@ -38,5 +38,5 @@ public interface OperationsInterface extends Remote {
      * @return
      * @throws RemoteException
      */
-    public String hello(String name) throws RemoteException;
+    public boolean hello(String name, ClientInterface c) throws RemoteException;
 }
