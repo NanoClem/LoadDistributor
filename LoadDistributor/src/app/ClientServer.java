@@ -4,11 +4,11 @@ import app.interfaces.ClientInterface;
 import app.interfaces.SwitcherInterface;
 import app.rmiobjects.Client;
 
-import java.util.Scanner;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 
 
 /**
@@ -28,29 +28,66 @@ public class ClientServer {
             Registry registry = LocateRegistry.getRegistry(10000);                       // access to registry on port 10000
             SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // get the "Switcher" object in registry 
             stub.check();                                                                // server side test
-
+            
             /* -------------------------------
-                HELLO TEST
+                INITIALISING TESTS
             ------------------------------- */
-            System.out.println("HELLO TEST");
-            helloTest(stub, client);
+            boolean loop = true;
 
-           /* -------------------------------
-                READ AND WRITE TEST
-            ------------------------------- */
-            //read test
-            String freadname = "read_test.txt";
-            System.out.println("READING TEST");
-            readTest(stub, freadname, client);
+            do {
+                System.out.println("=====TEST CASE=====");
+                System.out.println("1 : Hello test");
+                System.out.println("2 : Reading test");
+                System.out.println("3 : Writing test");
+                System.out.println("4 : Exit");
+                Scanner in = new Scanner(System.in);
+                int choice = in.nextInt();
+                
 
-            //write test
-            String fwritename = "write_test.txt";
-            byte[] data = "This is a write test".getBytes();
-            System.out.println("WRITING TEST");
-            writeTest(stub, fwritename, data, client);
+                switch (choice) {
+                    /* -------------------------------
+                        HELLO TEST
+                    ------------------------------- */
+                    case 1:
+                        System.out.println("HELLO TEST");
+                        helloTest(stub, client);
+                        break;
+
+                    case 2:
+                        /* -------------------------------
+                            READ TEST
+                        ------------------------------- */
+                        String freadname = "read_test.txt";
+                        System.out.println("READING TEST");
+                        readTest(stub, freadname, client);
+                        break;
+
+                    case 3:
+                        /* -------------------------------
+                            WRITE TEST
+                        ------------------------------- */
+                        String fwritename = "write_test.txt";
+                        byte[] data = "This is a write test".getBytes();
+                        System.out.println("WRITING TEST");
+                        writeTest(stub, fwritename, data, client);
+                        break;
+
+                    case 4:
+                        in.close();
+                        loop = false;
+                        break;
+                
+                    default:
+                        break;
+                }
+                System.out.println("");
+            } while (loop);
         } 
         catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            System.out.println("END OF PROGRAM");
         }
     }
 
@@ -67,13 +104,20 @@ public class ClientServer {
      */
     public static void helloTest(SwitcherInterface s, ClientInterface c) throws RemoteException {
 
-        Scanner sc = new Scanner(System.in);
-        System.out.println("What's your name ?");
-        String input = sc.nextLine();
-        sc.close();
+        long start = System.nanoTime();
 
-        s.hello(input, c);
-        System.out.println(c.getHelloResponse());
+        try {
+            s.hello(c.getSurname(), c);
+            System.out.println(c.getHelloResponse());
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
+        }
     }
 
 
@@ -86,14 +130,23 @@ public class ClientServer {
      * @throws IOException
      */
     public static void readTest(SwitcherInterface s, String filename, ClientInterface c) throws RemoteException, IOException {
+        
+        long start = System.nanoTime();
+
         try {
             if(s.read(filename, c)) {
                 System.out.println(new String(c.getReadResponse()));
             } else {
                 System.out.println("Read failed");
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
         }
     }
 
@@ -108,14 +161,23 @@ public class ClientServer {
      * @throws IOException
      */
     public static void writeTest(SwitcherInterface s, String filename, byte[] data, ClientInterface c) throws RemoteException, IOException {
+        
+        long start = System.nanoTime();
+
         try {
             if(s.write(filename, data, c)) {
                 System.out.println("Data successfuly writen");
             } else {
                 System.out.println("Write failed");
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             e.printStackTrace();
+        } 
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
         }
     }
 
