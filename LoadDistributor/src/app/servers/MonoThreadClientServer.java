@@ -1,4 +1,4 @@
-package app;
+package app.servers;
 
 import app.interfaces.ClientInterface;
 import app.interfaces.SwitcherInterface;
@@ -14,7 +14,7 @@ import java.util.Scanner;
 /**
  * @author NanoClem
  */
-public class ClientServer {
+public class MonoThreadClientServer {
     public static void main(String[] argv) {
         try {
             /* -------------------------------

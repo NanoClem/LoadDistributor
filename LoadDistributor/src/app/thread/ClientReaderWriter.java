@@ -10,9 +10,9 @@ import app.rmiobjects.Client;
 
 
 /**
- * ClientReadThread : can only read
+ * ClientThread : can read and write
  */
-public class ClientReadThread extends Thread {
+public class ClientReaderWriter extends Thread {
 
     /**
      * Name of the thread
@@ -25,9 +25,14 @@ public class ClientReadThread extends Thread {
     private SwitcherInterface stub;
 
     /**
-     * 
+     * Reading filename
      */
-    private String filename = "read_test.txt";
+    private String readFile = "read_file.txt";
+
+    /**
+     * Writing filename
+     */
+    private String writeFile = "write_file.txt";
 
 
     /**
@@ -39,7 +44,7 @@ public class ClientReadThread extends Thread {
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public ClientReadThread(int id, String name, SwitcherInterface s) throws RemoteException {
+    public ClientReaderWriter(int id, String name, SwitcherInterface s) throws RemoteException {
 
         // SET NEW CLIENT
         this.client = new Client(id, name);
@@ -55,9 +60,13 @@ public class ClientReadThread extends Thread {
      * Thread run function
      */
     public void run() {
+
+        String s = "Thread " + this.getName() + " writed here";
+        byte[] b = s.getBytes();
         while(true) {
             try {
-                this.read(this.filename);
+                this.read(this.readFile);
+                this.write(this.writeFile, b);
                 Thread.sleep(1000);
             } 
             catch (Exception e) {
@@ -68,7 +77,7 @@ public class ClientReadThread extends Thread {
 
 
     /**
-     * Reading some file
+     * READING TEST
      * @param s
      * @param filename
      * @param c
@@ -96,4 +105,34 @@ public class ClientReadThread extends Thread {
         }
     }
 
+
+    /**
+     * WRITING TEST
+     * @param s
+     * @param filename
+     * @param data
+     * @param c
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public void write(String filename, byte[] data) throws RemoteException, IOException {
+        
+        long start = System.nanoTime();
+
+        try {
+            if(this.stub.write(filename, data, client)) {
+                System.out.println("Data successfuly writen");
+            } else {
+                System.out.println("Write failed");
+            }
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        } 
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
+        }
+    }
 }

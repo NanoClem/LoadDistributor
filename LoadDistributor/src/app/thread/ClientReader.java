@@ -10,9 +10,9 @@ import app.rmiobjects.Client;
 
 
 /**
- * ClientThread : can only write
+ * ClientReadThread : can only read
  */
-public class ClientWriteThread extends Thread {
+public class ClientReader extends Thread {
 
     /**
      * Name of the thread
@@ -25,9 +25,9 @@ public class ClientWriteThread extends Thread {
     private SwitcherInterface stub;
 
     /**
-     * 
+     * Name of the processed file
      */
-    private String filename = "write_test.txt";
+    private String filename = "read_file.txt";
 
 
     /**
@@ -39,7 +39,7 @@ public class ClientWriteThread extends Thread {
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public ClientWriteThread(int id, String name, SwitcherInterface s) throws RemoteException {
+    public ClientReader(int id, String name, SwitcherInterface s) throws RemoteException {
 
         // SET NEW CLIENT
         this.client = new Client(id, name);
@@ -55,12 +55,9 @@ public class ClientWriteThread extends Thread {
      * Thread run function
      */
     public void run() {
-
-        String s = "Thread " + this.getName() + " writed here";
-        byte[] b = s.getBytes();
         while(true) {
             try {
-                this.write(this.filename, b);
+                this.read(this.filename);
                 Thread.sleep(1000);
             } 
             catch (Exception e) {
@@ -71,32 +68,32 @@ public class ClientWriteThread extends Thread {
 
 
     /**
-     * WRITING TEST
+     * Reading some file
      * @param s
      * @param filename
-     * @param data
      * @param c
      * @throws RemoteException
      * @throws IOException
      */
-    public void write(String filename, byte[] data) throws RemoteException, IOException {
+    public void read(String filename) throws RemoteException, IOException {
         
         long start = System.nanoTime();
 
         try {
-            if(this.stub.write(filename, data, client)) {
-                System.out.println("Data successfuly writen");
+            if(this.stub.read(filename, this.client)) {
+                System.out.println(new String(this.client.getReadResponse()));
             } else {
-                System.out.println("Write failed");
+                System.out.println("Read failed");
             }
         } 
         catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
         finally {
             long end = System.nanoTime();
             long timeElapsed = end - start;
             System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
         }
     }
+
 }

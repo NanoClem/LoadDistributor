@@ -10,9 +10,9 @@ import app.rmiobjects.Client;
 
 
 /**
- * ClientThread : can read and write
+ * ClientThread : can only write
  */
-public class ClientThread extends Thread {
+public class ClientWriter extends Thread {
 
     /**
      * Name of the thread
@@ -25,14 +25,9 @@ public class ClientThread extends Thread {
     private SwitcherInterface stub;
 
     /**
-     * 
+     * Name of the processed file
      */
-    private String readFile = "read_test.txt";
-
-    /**
-     * 
-     */
-    private String writeFile = "write_file.txt";
+    private String filename = "write_file.txt";
 
 
     /**
@@ -44,7 +39,7 @@ public class ClientThread extends Thread {
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public ClientThread(int id, String name, SwitcherInterface s) throws RemoteException {
+    public ClientWriter(int id, String name, SwitcherInterface s) throws RemoteException {
 
         // SET NEW CLIENT
         this.client = new Client(id, name);
@@ -65,43 +60,12 @@ public class ClientThread extends Thread {
         byte[] b = s.getBytes();
         while(true) {
             try {
-                this.read(this.readFile);
-                this.write(this.writeFile, b);
+                this.write(this.filename, b);
                 Thread.sleep(1000);
             } 
             catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-
-    /**
-     * READING TEST
-     * @param s
-     * @param filename
-     * @param c
-     * @throws RemoteException
-     * @throws IOException
-     */
-    public void read(String filename) throws RemoteException, IOException {
-        
-        long start = System.nanoTime();
-
-        try {
-            if(this.stub.read(filename, this.client)) {
-                System.out.println(new String(this.client.getReadResponse()));
-            } else {
-                System.out.println("Read failed");
-            }
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            long end = System.nanoTime();
-            long timeElapsed = end - start;
-            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
         }
     }
 

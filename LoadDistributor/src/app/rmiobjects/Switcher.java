@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 
@@ -38,6 +41,21 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    * Map of machines and their load
    */
   public HashMap<MachineInterface, Integer> machines;
+
+  /**
+   * 
+   */
+  private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
+  /**
+   * 
+   */
+  private final Lock readLock = readWriteLock.readLock();
+
+  /**
+   * 
+   */
+  private final Lock writeLock = readWriteLock.writeLock();
 
 
   /**
@@ -94,6 +112,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /* =====================================================
           SWITCHER INTERFACE FUNCTIONS
   ===================================================== */
+
   /**
    * @see SwitcherInterface#check
    */
@@ -102,6 +121,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
     System.out.println("[" + LocalDateTime.now() + "] " + "New client connected to server, welcome " + c.getSurname());
   } 
 
+
   /**
    * @see SwitcherInterface#getMachines()
    * @throws RemoteException
@@ -109,7 +129,16 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   @SuppressWarnings("unchecked")
   public HashMap<MachineInterface, Integer> getMachines() throws RemoteException {
-    return (HashMap<MachineInterface, Integer>) this.machines.clone();
+
+    readLock.lock();
+    try {
+      HashMap<MachineInterface, Integer> ret = (HashMap<MachineInterface, Integer>) this.machines.clone();
+      return ret;
+    }
+    finally {
+      readLock.unlock();
+    }
+    
   }
 
 
@@ -147,12 +176,11 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
-    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
-
     boolean ret = false;
     for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
+        System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
         this.notifyLoad(m, 1);    // load
         ret = m.read(filename, c);
         this.notifyLoad(m, -1);   // unload
@@ -191,23 +219,38 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /* =====================================================
             CONTROL INTERFACE FUNCTIONS
   ===================================================== */
+  
   /**
    * @see ControlInterface#addMachine
    */
   @Override
   public void addMachine(MachineInterface m) throws RemoteException {
-    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + " connected, welcome !");
-    this.machines.put(m, 0);
+
+    this.writeLock.lock();
+    try {
+      System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + " connected, welcome !");
+      this.machines.put(m, 0);
+    }
+    finally {
+      this.writeLock.unlock();
+    }
   }
+
 
   /**
    * @see ControlInterface#removeMachine
    */
   @Override
   public void removeMachine(MachineInterface m) throws RemoteException {
-    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + " removed, goodbye");
-    this.machines.remove(m);
-    System.out.println("Machine removed, goodbye " + m.getSurname());
+
+    this.writeLock.lock();
+    try {
+      System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + " removed, goodbye");
+      this.machines.remove(m);
+    }
+    finally {
+      this.writeLock.unlock();
+    }
   }
 
 
@@ -220,17 +263,20 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   public void notifyLoad(MachineInterface m, int load) throws RemoteException {
 
-    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": current load = " + m.getLoad());
-    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": incoming load " + load);
-
-    // LOCAL LOAD
-    m.addLoad(load);
-
-    // SWITCHER LOAD
-    int oldLoad = this.machines.get(m);
-    this.machines.replace(m, oldLoad + load);
-
-    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": new load = " + this.machines.get(m));
+    this.writeLock.lock();    // waiting for the write lock to release
+    try {
+      System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": current load = " + m.getLoad());
+      System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": incoming load " + load);
+      // LOCAL LOAD
+      m.addLoad(load);
+      // SWITCHER LOAD
+      int oldLoad = this.machines.get(m);
+      this.machines.replace(m, oldLoad + load);
+      System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": new load = " + this.machines.get(m));
+    }
+    finally {
+      this.writeLock.unlock();
+    }
   }
 
 }
