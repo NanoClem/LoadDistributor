@@ -27,7 +27,7 @@ public class ClientServer {
             ------------------------------- */
             Registry registry = LocateRegistry.getRegistry(10000);                       // access to registry on port 10000
             SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // get the "Switcher" object in registry 
-            stub.check(client);                                                                // server side test
+            stub.check(client);                                                          // server side test
             
             /* -------------------------------
                 INITIALISING TESTS
