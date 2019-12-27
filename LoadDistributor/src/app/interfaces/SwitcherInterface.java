@@ -26,7 +26,7 @@ public interface SwitcherInterface extends OperationsInterface, ControlInterface
    * Print a verification message
    * @throws RemoteException
    */
-  public void check() throws RemoteException;
+  public void check(ClientInterface c) throws RemoteException;
 
   /**
    * @return a shallow copy of the machines container

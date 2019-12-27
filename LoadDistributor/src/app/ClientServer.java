@@ -27,12 +27,13 @@ public class ClientServer {
             ------------------------------- */
             Registry registry = LocateRegistry.getRegistry(10000);                       // access to registry on port 10000
             SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // get the "Switcher" object in registry 
-            stub.check();                                                                // server side test
+            stub.check(client);                                                                // server side test
             
             /* -------------------------------
                 INITIALISING TESTS
             ------------------------------- */
             boolean loop = true;
+            Scanner in = new Scanner(System.in);
 
             do {
                 System.out.println("=====TEST CASE=====");
@@ -40,10 +41,8 @@ public class ClientServer {
                 System.out.println("2 : Reading test");
                 System.out.println("3 : Writing test");
                 System.out.println("4 : Exit");
-                Scanner in = new Scanner(System.in);
-                int choice = in.nextInt();
                 
-
+                int choice = in.nextInt();
                 switch (choice) {
                     /* -------------------------------
                         HELLO TEST

@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDateTime;
 
 
 /**
@@ -138,9 +139,24 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public boolean hello(String name, ClientInterface c) throws RemoteException {
-        System.out.println("Saying hello to " + name);
-        c.setHelloResponse("Hello " + c.getSurname() + " ! From " + this.getSurname());
-        return true;
+
+        System.out.println("[" + LocalDateTime.now() + "] " + "hello task from " + c.getSurname());
+
+        boolean ret = false;
+        String resp = "";
+        try {
+            resp = "Hello " + c.getSurname() + " ! From " + this.getSurname();
+            ret = true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            ret = false;
+        }
+        finally {
+            c.setHelloResponse(resp);
+        }
+
+        return ret;
     }
 
     
@@ -151,7 +167,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     @Override
     public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
-        System.out.println("Reading from " + filename);
+        System.out.println("[" + LocalDateTime.now() + "] " + "reading task from " + c.getSurname() + ": " + filename);
 
         // PARAMS
         URL fUrl    = getClass().getResource(filename);
@@ -184,7 +200,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     @Override
     public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException {
 
-        System.out.println("Writing in " + filename);
+        System.out.println("[" + LocalDateTime.now() + "] " + "writing task from " + c.getSurname() + ": " + filename);
 
         // PARAMS
         File f      = new File(filename);

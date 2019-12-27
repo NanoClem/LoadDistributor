@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDateTime;
 
 
 
@@ -97,8 +98,8 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    * @see SwitcherInterface#check
    */
   @Override
-  public void check() throws RemoteException {
-    System.out.println("Client connected to server");
+  public void check(ClientInterface c) throws RemoteException {
+    System.out.println("[" + LocalDateTime.now() + "] " + "New client connected to server, welcome " + c.getSurname());
   } 
 
   /**
@@ -122,6 +123,8 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   public boolean hello(String name, ClientInterface c) throws RemoteException {
     
+    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked for hello");
+
     boolean ret = false;
     for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
@@ -144,6 +147,8 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
+    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
+
     boolean ret = false;
     for(MachineInterface m : this.machines.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
@@ -165,6 +170,8 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
+
+    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to write in " + filename);
 
     boolean ret = false;
     for(MachineInterface m : this.machines.keySet()) {
@@ -189,8 +196,8 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public void addMachine(MachineInterface m) throws RemoteException {
+    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + " connected, welcome !");
     this.machines.put(m, 0);
-    System.out.println("New machine connected, welcome " + m.getSurname());
   }
 
   /**
@@ -198,6 +205,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public void removeMachine(MachineInterface m) throws RemoteException {
+    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + " removed, goodbye");
     this.machines.remove(m);
     System.out.println("Machine removed, goodbye " + m.getSurname());
   }
@@ -211,12 +219,18 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
    */
   @Override
   public void notifyLoad(MachineInterface m, int load) throws RemoteException {
+
+    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": current load = " + m.getLoad());
+    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": incoming load " + load);
+
     // LOCAL LOAD
     m.addLoad(load);
 
     // SWITCHER LOAD
     int oldLoad = this.machines.get(m);
     this.machines.replace(m, oldLoad + load);
+
+    System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": new load = " + this.machines.get(m));
   }
 
 }
