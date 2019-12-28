@@ -6,12 +6,15 @@ import app.interfaces.SwitcherInterface;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -143,6 +146,23 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
 
   /**
+   * @see SwitcherInterface#getMin()
+   */
+  @Override
+  public MachineInterface getMin() throws RemoteException {
+
+    this.readLock.lock();
+    try {
+      MachineInterface m = Collections.min(this.machines.entrySet(), HashMap.Entry.comparingByValue()).getKey();
+      return m;
+    }
+    finally {
+      this.readLock.unlock();
+    }
+  }
+
+
+  /**
    * Call the read function from a machine among the arraylist
    * This function uses the "min load" algorithm to find a machine
    * @see MachineInterface#readByMin
@@ -152,14 +172,12 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
     System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
     boolean ret = false;
-    
     // FINDING THE MIN LOAD
-    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
-    MachineInterface m = Collections.min(machinesCopy.entrySet(), HashMap.Entry.comparingByValue()).getKey();
-
-    this.notifyLoad(m, 1);    // load
-    ret = m.read(filename, c);
-    this.notifyLoad(m, -1);   // unload
+    MachineInterface min = this.getMin();
+    // NOTIFY AND READ
+    this.notifyLoad(min, 1);    // load
+    ret = min.read(filename, c);
+    this.notifyLoad(min, -1);   // unload
 
     return ret;
   }
@@ -177,12 +195,11 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
     System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to write in " + filename);
 
     // FINDING THE MIN LOAD
-    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
-    MachineInterface m = Collections.min(machinesCopy.entrySet(), HashMap.Entry.comparingByValue()).getKey();
-
-    this.notifyLoad(m, 1);    // load
-    ret = m.write(filename, data, c);
-    this.notifyLoad(m, -1);   // unload
+    MachineInterface min = this.getMin();
+    // NOTIFY AND READ
+    this.notifyLoad(min, 1);    // load
+    ret = min.write(filename, data, c);
+    this.notifyLoad(min, -1);   // unload
 
     return ret;
   }
@@ -310,26 +327,80 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /* =====================================================
             NOTIFY INTERFACE FUNCTIONS
   ===================================================== */
+
   /**
    * @see NotifyInterface#notifyLoad
    */
   @Override
   public void notifyLoad(MachineInterface m, int load) throws RemoteException {
 
-    this.writeLock.lock();    // waiting for the write lock to release
+    this.writeLock.lock();
     try {
       System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": current load = " + m.getLoad());
       System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": incoming load " + load);
-      // LOCAL LOAD
-      m.addLoad(load);
-      // SWITCHER LOAD
-      int oldLoad = this.machines.get(m);
-      this.machines.replace(m, oldLoad + load);
+
+      // UPDATE LOADS
+      m.addLoad(load);                            // update machine's local load
+      int oldLoad = this.machines.get(m);         // switcher's load
+      this.machines.replace(m, oldLoad + load);   // update loads on switcher
+
+      // WRITE DATA LOGS
+      // try {
+      //   notifyData(m, Paths.get("").toAbsolutePath().toString() + "\\src\\app\\files\\logs\\machines_load.csv");
+      // } 
+      // catch (IOException e) {
+      //   e.printStackTrace();
+      // }
+
       System.out.println("[" + LocalDateTime.now() + "] " + "machine " + m.getId() + ": new load = " + this.machines.get(m));
     }
     finally {
       this.writeLock.unlock();
     }
+  }
+
+
+  /**
+   * @see NotifyInterface#notifyData
+   */
+  @Override
+  public boolean notifyData(MachineInterface m, String filename) throws RemoteException, IOException, FileNotFoundException {
+    
+    // PARAMS
+    File f      = new File(filename);
+    boolean ret = false;
+
+    // STREAM
+    try(FileOutputStream fos = new FileOutputStream(f, true)) {
+
+      StringBuilder line = new StringBuilder();
+      // if (!f.exists()) {
+      //   line.append("timestamp ").append("id ").append("name ").append("load").append(System.getProperty("line.separator"));
+      //   f.createNewFile();  
+      // }
+      // DATA
+      long timestamp = LocalDateTime.now().atZone(ZoneOffset.UTC).toEpochSecond();
+      int id           = m.getId();
+      String name      = m.getSurname();
+      int load         = m.getLoad(); 
+      // FORMAT
+      line.append(timestamp).append(" ");   // timestamp value
+      line.append(id).append(" ");          // machine id
+      line.append(name).append(" ");        // machine name
+      line.append(load);                    // machine load
+      // WRITE
+      fos.write(new String(line).getBytes());
+      fos.write(System.getProperty("line.separator").getBytes());
+      fos.flush();
+      fos.close();
+      ret = true;
+    } 
+    catch (IOException e) {
+      e.printStackTrace();
+      ret = false;
+    }
+
+    return ret;
   }
 
 }

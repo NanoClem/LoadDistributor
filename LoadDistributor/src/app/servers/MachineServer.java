@@ -31,12 +31,14 @@ public class MachineServer {
             // MACHINES
             Machine m1 = new Machine(1, "Kave");
             Machine m2 = new Machine(2, "Seb");
-            // Machine m3 = new Machine(3, "Sorana");
+            Machine m3 = new Machine(3, "Sorana");
+            Machine m4 = new Machine(4, "Flavien");
             // MACHINE LIST
             ArrayList<MachineInterface> mList = new ArrayList<MachineInterface>();
             mList.add(m1);
             mList.add(m2);
-            // mList.add(m3);
+            mList.add(m3);
+            mList.add(m4);
 
             /* ---------------------------------------
                 INITIALISING STUB
@@ -48,13 +50,10 @@ public class MachineServer {
                 BIND MACHINES ON REGISTRY & SWITCHER
             --------------------------------------- */
             for(MachineInterface msklt : mList) {
-                // BIND ON REGISTRY
-                registry.rebind(url + "/" + msklt.getSurname(), msklt);
-                // ADD IT TO THE LIST IN THE SWITCHER
-                stub.addMachine(msklt);
+                registry.rebind(url + "/" + msklt.getSurname(), msklt);     // bind on registry
+                stub.addMachine(msklt);                                     // add it to the container in switcher
                 System.out.println("Machine waiting on port 10000");
             }
-
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {

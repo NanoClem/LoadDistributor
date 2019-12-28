@@ -37,6 +37,12 @@ public interface SwitcherInterface extends OperationsInterface, ControlInterface
   public HashMap<MachineInterface, Integer> getMachines() throws RemoteException;
 
   /**
+   * @return the machine with the min load among the HashMap
+   * @throws RemoteException
+   */
+  public MachineInterface getMin() throws RemoteException;
+
+  /**
    * read function with minimum load selection
    * @param filename
    * @param c

@@ -27,7 +27,7 @@ public class MultiThreadClientServer {
             INITIALISING FILES PATH
         ------------------------------- */
         Path currentRelativePath = Paths.get("");
-        String path  = currentRelativePath.toAbsolutePath().toString() + "\\src\\app\\files\\";
+        String path  = currentRelativePath.toAbsolutePath().toString() + "\\src\\app\\files\\tests\\";
         String rFile = path + "read_file.txt";
         String wFile = path + "write_file.txt";
 

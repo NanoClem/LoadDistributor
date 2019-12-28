@@ -121,7 +121,12 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public int getLoad() throws RemoteException {
-        return this.load;
+        this.readLock.lock();
+        try {
+            return this.load;
+        } finally {
+            this.readLock.unlock();
+        }
     }
 
     /**
@@ -143,7 +148,12 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public void addLoad(int l) throws RemoteException {
-        this.load += l;
+        this.writeLock.lock();
+        try {
+            this.load += l;
+        } finally {
+            this.writeLock.unlock();
+        }
     }
 
 
@@ -159,8 +169,11 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     public boolean hello(String name, ClientInterface c) throws RemoteException {
 
         this.readLock.lock();
+
+        // PARAMS
         boolean ret = false;
         String resp = "";
+        
         try {
             System.out.println("[" + LocalDateTime.now() + "] " + "hello task from " + c.getSurname());
             resp = "Hello " + c.getSurname() + " ! From " + this.getSurname();
@@ -187,6 +200,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
         this.readLock.lock();
+
         // PARAMS
         File f      =  new File(filename); //new File(fUrl.getPath());
         byte[] resp = new byte[(int) f.length()];
@@ -220,6 +234,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException {
 
         this.writeLock.lock();
+
         // PARAMS
         File f      = new File(filename);
         boolean ret = false;
