@@ -65,8 +65,10 @@ public class ClientReaderWriter extends Thread {
         byte[] b = s.getBytes();
         while(true) {
             try {
-                this.read(this.readFile);
-                this.write(this.writeFile, b);
+                // this.read(this.readFile);
+                // this.write(this.writeFile, b);
+                this.readMin(this.readFile);
+                this.writeMin(this.writeFile, b);
                 Thread.sleep(1000);
             } 
             catch (Exception e) {
@@ -75,6 +77,10 @@ public class ClientReaderWriter extends Thread {
         }
     }
 
+
+    /* ================================================
+            AVAILABLE OR OCCUPIED ALGORITHM
+    ================================================ */
 
     /**
      * READING TEST
@@ -121,6 +127,71 @@ public class ClientReaderWriter extends Thread {
 
         try {
             if(this.stub.write(filename, data, client)) {
+                System.out.println("Data successfuly writen");
+            } else {
+                System.out.println("Write failed");
+            }
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        } 
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
+        }
+    }
+
+
+    /* ================================================
+            MIN LOAD ALGORITHM
+    ================================================ */
+
+    /**
+     * Reading some file using "min load" algorithm
+     * @param s
+     * @param filename
+     * @param c
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public void readMin(String filename) throws RemoteException, IOException {
+        
+        long start = System.nanoTime();
+
+        try {
+            if(this.stub.readByMin(filename, this.client)) {
+                System.out.println(new String(this.client.getReadResponse()));
+            } else {
+                System.out.println("Read failed");
+            }
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
+        }
+    }
+
+
+    /**
+     * WRITING TEST
+     * @param s
+     * @param filename
+     * @param data
+     * @param c
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public void writeMin(String filename, byte[] data) throws RemoteException, IOException {
+        
+        long start = System.nanoTime();
+
+        try {
+            if(this.stub.writeByMin(filename, data, client)) {
                 System.out.println("Data successfuly writen");
             } else {
                 System.out.println("Write failed");

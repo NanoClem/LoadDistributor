@@ -1,5 +1,7 @@
 package app.interfaces;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
@@ -33,4 +35,27 @@ public interface SwitcherInterface extends OperationsInterface, ControlInterface
    * @throws RemoteException
    */
   public HashMap<MachineInterface, Integer> getMachines() throws RemoteException;
+
+  /**
+   * read function with minimum load selection
+   * @param filename
+   * @param c
+   * @return
+   * @throws RemoteException
+   * @throws IOException
+   * @throws FileNotFoundException
+   */
+  public boolean readByMin(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException;
+
+  /**
+   * write function with minimum load selection
+   * @param filename
+   * @param data
+   * @param c
+   * @return
+   * @throws RemoteException
+   * @throws IOException
+   * @throws FileNotFoundException
+   */
+  public boolean writeByMin(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException;
 }

@@ -60,7 +60,8 @@ public class ClientWriter extends Thread {
         byte[] b = s.getBytes();
         while(true) {
             try {
-                this.write(this.filename, b);
+                // this.write(this.filename, b);
+                this.writeMin(this.filename, b);
                 Thread.sleep(1000);
             } 
             catch (Exception e) {
@@ -69,6 +70,10 @@ public class ClientWriter extends Thread {
         }
     }
 
+
+    /* ================================================
+            AVAILABLE OR OCCUPIED ALGORITHM
+    ================================================ */
 
     /**
      * WRITING TEST
@@ -85,6 +90,41 @@ public class ClientWriter extends Thread {
 
         try {
             if(this.stub.write(filename, data, client)) {
+                System.out.println("Data successfuly writen");
+            } else {
+                System.out.println("Write failed");
+            }
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        } 
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
+        }
+    }
+
+
+    /* ================================================
+            MIN LOAD ALGORITHM
+    ================================================ */
+
+    /**
+     * WRITING TEST
+     * @param s
+     * @param filename
+     * @param data
+     * @param c
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public void writeMin(String filename, byte[] data) throws RemoteException, IOException {
+        
+        long start = System.nanoTime();
+
+        try {
+            if(this.stub.writeByMin(filename, data, client)) {
                 System.out.println("Data successfuly writen");
             } else {
                 System.out.println("Write failed");

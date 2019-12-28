@@ -57,7 +57,8 @@ public class ClientReader extends Thread {
     public void run() {
         while(true) {
             try {
-                this.read(this.filename);
+                // this.read(this.filename);
+                this.readMin(this.filename);
                 Thread.sleep(1000);
             } 
             catch (Exception e) {
@@ -66,9 +67,11 @@ public class ClientReader extends Thread {
         }
     }
 
-
+    /* ================================================
+            AVAILABLE OR OCCUPIED ALGORITHM
+    ================================================ */
     /**
-     * Reading some file
+     * Reading some file using "available or occupied" algorithm
      * @param s
      * @param filename
      * @param c
@@ -81,6 +84,40 @@ public class ClientReader extends Thread {
 
         try {
             if(this.stub.read(filename, this.client)) {
+                System.out.println(new String(this.client.getReadResponse()));
+            } else {
+                System.out.println("Read failed");
+            }
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            long end = System.nanoTime();
+            long timeElapsed = end - start;
+            System.out.println("Execution time : " + timeElapsed/1000000 + "ms");
+        }
+    }
+
+    
+    /* ================================================
+            MIN LOAD ALGORITHM
+    ================================================ */
+
+    /**
+     * Reading some file using "min load" algorithm
+     * @param s
+     * @param filename
+     * @param c
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public void readMin(String filename) throws RemoteException, IOException {
+        
+        long start = System.nanoTime();
+
+        try {
+            if(this.stub.readByMin(filename, this.client)) {
                 System.out.println(new String(this.client.getReadResponse()));
             } else {
                 System.out.println("Read failed");

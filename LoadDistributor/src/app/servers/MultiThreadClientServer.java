@@ -25,12 +25,14 @@ public class MultiThreadClientServer {
             INITIALISING CLIENT THREADS
         ------------------------------- */
         // CLIENTS
-        ClientReader reader     = new ClientReader(1, "Paul", stub);
-        ClientWriter writer     = new ClientWriter(2, "Patrick", stub);
-        ClientReaderWriter both = new ClientReaderWriter(3, "Hector", stub);
+        ClientReader reader1     = new ClientReader(1, "Paul", stub);
+        ClientReader reader2     = new ClientReader(2, "Maria", stub);
+        ClientWriter writer      = new ClientWriter(3, "Patrick", stub);
+        ClientReaderWriter both  = new ClientReaderWriter(4, "Hector", stub);
         // THREAD LIST
         ArrayList<Thread> tList = new ArrayList<Thread>();
-        tList.add(reader);
+        tList.add(reader1);
+        tList.add(reader2);
         tList.add(writer);
         tList.add(both);
         

@@ -4,6 +4,7 @@ import app.interfaces.ClientInterface;
 import app.interfaces.MachineInterface;
 import app.interfaces.SwitcherInterface;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -138,24 +139,71 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
     finally {
       readLock.unlock();
     }
-    
   }
 
 
+  /**
+   * Call the read function from a machine among the arraylist
+   * This function uses the "min load" algorithm to find a machine
+   * @see MachineInterface#readByMin
+   */
+  @Override
+  public boolean readByMin(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
+
+    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
+    boolean ret = false;
+    
+    // FINDING THE MIN LOAD
+    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
+    MachineInterface m = Collections.min(machinesCopy.entrySet(), HashMap.Entry.comparingByValue()).getKey();
+
+    this.notifyLoad(m, 1);    // load
+    ret = m.read(filename, c);
+    this.notifyLoad(m, -1);   // unload
+
+    return ret;
+  }
+
+
+  /**
+   * Call the write function from a machine among the arraylist
+   * This function uses the "min load" algorithm to find a machine
+   * @see MachineInterface#write
+   */
+  @Override
+  public boolean writeByMin(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
+
+    boolean ret = false;
+    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to write in " + filename);
+
+    // FINDING THE MIN LOAD
+    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
+    MachineInterface m = Collections.min(machinesCopy.entrySet(), HashMap.Entry.comparingByValue()).getKey();
+
+    this.notifyLoad(m, 1);    // load
+    ret = m.write(filename, data, c);
+    this.notifyLoad(m, -1);   // unload
+
+    return ret;
+  }
+
+  
   /* =====================================================
             OPERATION INTERFACE FUNCTIONS
   ===================================================== */
 
   /**
    * @see MachinerInterface#hello()
+   * This function uses the "available or occupied" algorithm when looking for machines
    */
   @Override
   public boolean hello(String name, ClientInterface c) throws RemoteException {
     
     System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked for hello");
-
     boolean ret = false;
-    for(MachineInterface m : this.machines.keySet()) {
+    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
+    
+    for(MachineInterface m : machinesCopy.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
         this.notifyLoad(m, 1);    // load
@@ -171,16 +219,19 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
   /**
    * Call the read function from a machine among the arraylist
+   * This function uses the "available or occupied" algorithm when looking for machines
    * @see MachineInterface#read
    */
   @Override
   public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
+    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
     boolean ret = false;
-    for(MachineInterface m : this.machines.keySet()) {
+    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
+    
+    for(MachineInterface m : machinesCopy.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
-        System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
         this.notifyLoad(m, 1);    // load
         ret = m.read(filename, c);
         this.notifyLoad(m, -1);   // unload
@@ -194,15 +245,17 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
   /**
    * Call the write function from a machine among the arraylist
+   * This function uses the "available or occupied" algorithm when looking for machines
    * @see MachineInterface#write
    */
   @Override
   public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
     System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to write in " + filename);
-
     boolean ret = false;
-    for(MachineInterface m : this.machines.keySet()) {
+    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
+
+    for(MachineInterface m : machinesCopy.keySet()) {
       // LOOKING FOR FREE LOADED MACHINE
       if(this.machines.get(m) <= 0) {
         this.notifyLoad(m, 1);    // load
