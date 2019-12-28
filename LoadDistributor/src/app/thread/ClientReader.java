@@ -27,7 +27,7 @@ public class ClientReader extends Thread {
     /**
      * Name of the processed file
      */
-    private String filename = "read_file.txt";
+    private String filename;
 
 
     /**
@@ -39,11 +39,14 @@ public class ClientReader extends Thread {
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public ClientReader(int id, String name, SwitcherInterface s) throws RemoteException {
+    public ClientReader(int id, String name, String rFilename, SwitcherInterface s) throws RemoteException {
 
         // SET NEW CLIENT
         this.client = new Client(id, name);
         this.setName(name);
+
+        // SET FILE
+        this.filename = rFilename;
 
         // SET STUB
         this.stub = s;

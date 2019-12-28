@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
@@ -189,8 +188,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
 
         this.readLock.lock();
         // PARAMS
-        URL fUrl    = getClass().getResource(filename);
-        File f      = new File(fUrl.getPath());
+        File f      =  new File(filename); //new File(fUrl.getPath());
         byte[] resp = new byte[(int) f.length()];
         boolean ret = false;
 

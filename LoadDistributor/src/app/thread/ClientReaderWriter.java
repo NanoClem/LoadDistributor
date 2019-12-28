@@ -27,12 +27,12 @@ public class ClientReaderWriter extends Thread {
     /**
      * Reading filename
      */
-    private String readFile = "read_file.txt";
+    private String readFile;
 
     /**
      * Writing filename
      */
-    private String writeFile = "write_file.txt";
+    private String writeFile;
 
 
     /**
@@ -44,11 +44,15 @@ public class ClientReaderWriter extends Thread {
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public ClientReaderWriter(int id, String name, SwitcherInterface s) throws RemoteException {
+    public ClientReaderWriter(int id, String name, String rFilename, String wFilename, SwitcherInterface s) throws RemoteException {
 
         // SET NEW CLIENT
         this.client = new Client(id, name);
         this.setName(name);
+
+        // SET FILES
+        this.readFile  = rFilename;
+        this.writeFile = wFilename;
 
         // SET STUB
         this.stub = s;

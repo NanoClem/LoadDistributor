@@ -5,6 +5,8 @@ import app.interfaces.SwitcherInterface;
 import app.rmiobjects.Client;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -21,6 +23,14 @@ public class MonoThreadClientServer {
                 INITIALISING CLIENT
             ------------------------------- */
             Client client = new Client(1, "Pedro");
+
+            /* -------------------------------
+                INITIALISING FILES PATH
+            ------------------------------- */
+            Path currentRelativePath = Paths.get("");
+            String path  = currentRelativePath.toAbsolutePath().toString() + "\\src\\app\\files\\";
+            String rFile = path + "read_file.txt";
+            String wFile = path + "write_file.txt";
 
             /* -------------------------------
                 INITIALISING STUB
@@ -56,7 +66,7 @@ public class MonoThreadClientServer {
                         /* -------------------------------
                             READ TEST
                         ------------------------------- */
-                        String freadname = "read_test.txt";
+                        String freadname = rFile;
                         System.out.println("READING TEST");
                         readTest(stub, freadname, client);
                         break;
@@ -65,7 +75,7 @@ public class MonoThreadClientServer {
                         /* -------------------------------
                             WRITE TEST
                         ------------------------------- */
-                        String fwritename = "write_test.txt";
+                        String fwritename = wFile;
                         byte[] data = "This is a write test".getBytes();
                         System.out.println("WRITING TEST");
                         writeTest(stub, fwritename, data, client);

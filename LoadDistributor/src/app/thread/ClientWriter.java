@@ -27,7 +27,7 @@ public class ClientWriter extends Thread {
     /**
      * Name of the processed file
      */
-    private String filename = "write_file.txt";
+    private String filename;
 
 
     /**
@@ -39,11 +39,14 @@ public class ClientWriter extends Thread {
      * @throws RemoteException
      * @throws NotBoundException
      */
-    public ClientWriter(int id, String name, SwitcherInterface s) throws RemoteException {
+    public ClientWriter(int id, String name, String wFilename, SwitcherInterface s) throws RemoteException {
 
         // SET NEW CLIENT
         this.client = new Client(id, name);
         this.setName(name);
+
+        // SET FILE
+        this.filename = wFilename;
 
         // SET STUB
         this.stub = s;
