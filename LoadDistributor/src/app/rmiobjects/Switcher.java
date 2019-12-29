@@ -42,6 +42,11 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   private String surname;
 
   /**
+   * type of load distribution algorithm used by the switcher
+   */
+  private String mode;
+
+  /**
    * Map of machines and their load
    */
   public HashMap<MachineInterface, Integer> machines;
@@ -54,7 +59,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /**
    * 
    */
-  private final Lock readLock = readWriteLock.readLock();
+  // private final Lock readLock = readWriteLock.readLock();
 
   /**
    * 
@@ -65,29 +70,12 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /**
    * CONSTRUCTOR
    */
-  public Switcher(int num, String name) throws RemoteException {
+  public Switcher(int num, String name, String mode) throws RemoteException {
     super();
     this.id       = num;
     this.surname  = name;
+    this.mode     = mode;
     this.machines = new HashMap<MachineInterface, Integer>();
-  }
-
-  /**
-   * @return switcher's id
-   * @throws RemoteException
-   * @see SwitcherInterface#getId()
-   */
-  public int getId() throws RemoteException {
-    return this.id;
-  }
-
-  /**
-   * @return switcher's surname
-   * @throws RemoteException
-   * @see SwitcherInterface#getSurname()
-   */
-  public String getSurname() throws RemoteException {
-    return this.surname;
   }
 
   /**
@@ -105,6 +93,13 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   }
 
   /**
+   * @param mode the mode to set
+   */
+  public void setMode(String new_mode) {
+    this.mode = new_mode;
+  }
+
+  /**
    * @param machines the machines to set
    */
   @SuppressWarnings("unchecked")
@@ -113,6 +108,58 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   }
 
 
+  /* =====================================================
+          LOAD DISTRIBUTION ALGORITHMS
+  ===================================================== */
+
+  /**
+   * Get the first available machine.
+   * A load of 0 correspond to an available machine, 1 to occupied.
+   * If all machines are occupied, it will try until one gets free.
+   * @return the first available machine
+   * @throws RemoteException
+   */
+  private MachineInterface getFirstAvailable() throws RemoteException {
+
+    this.writeLock.lock();
+    MachineInterface ret = null;
+    int maxtry = 10;
+    try {
+      for(int i=0; i<maxtry; i++) {
+        for(MachineInterface m : this.machines.keySet()) {
+          if(m.getLoad() <= 0) {
+            ret = m;
+            i   = maxtry;   // no need to retry
+            break;
+          }
+        }
+      }
+    }
+    finally {
+      this.writeLock.unlock();
+    }
+
+    return ret;
+  }
+
+
+  /**
+   * Get the less loaded machine
+   * @return min loaded machine
+   * @throws RemoteException
+   */
+  private MachineInterface getMin() throws RemoteException {
+    this.writeLock.lock();
+    try {
+      MachineInterface m = Collections.min(this.machines.entrySet(), HashMap.Entry.comparingByValue()).getKey();
+      return m;
+    }
+    finally {
+      this.writeLock.unlock();
+    }
+  }
+
+  
   /* =====================================================
           SWITCHER INTERFACE FUNCTIONS
   ===================================================== */
@@ -125,7 +172,37 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
     System.out.println("[" + LocalDateTime.now() + "] " + "New client connected to server, welcome " + c.getSurname());
   } 
 
+  /**
+   * @return switcher's id
+   * @throws RemoteException
+   * @see SwitcherInterface#getId()
+   */
+  @Override
+  public int getId() throws RemoteException {
+    return this.id;
+  }
 
+  /**
+   * @return switcher's surname
+   * @throws RemoteException
+   * @see SwitcherInterface#getSurname()
+   */
+  @Override
+  public String getSurname() throws RemoteException {
+    return this.surname;
+  }
+
+  /**
+   * @return switcher's mode
+   * @throws RemoteException
+   * @see SwitcherInterface#getSurname()
+   */
+  @Override
+  public String getMode() throws RemoteException {
+    return this.mode;
+  }
+
+  
   /**
    * @see SwitcherInterface#getMachines()
    * @throws RemoteException
@@ -134,74 +211,38 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @SuppressWarnings("unchecked")
   public HashMap<MachineInterface, Integer> getMachines() throws RemoteException {
 
-    readLock.lock();
+   writeLock.lock();
     try {
       HashMap<MachineInterface, Integer> ret = (HashMap<MachineInterface, Integer>) this.machines.clone();
       return ret;
     }
     finally {
-      readLock.unlock();
+      writeLock.unlock();
     }
   }
 
 
   /**
-   * @see SwitcherInterface#getMin()
+   * @see SwitcherInterface#getMachine()
+   * @throws RemoteException
    */
   @Override
-  public MachineInterface getMin() throws RemoteException {
+  public MachineInterface getMachine() throws RemoteException {
 
-    this.writeLock.lock();
-    try {
-      MachineInterface m = Collections.min(this.machines.entrySet(), HashMap.Entry.comparingByValue()).getKey();
-      return m;
+    MachineInterface m = null;
+    switch (this.mode) {
+
+      case "AVAILABLE":
+        m = this.getFirstAvailable();
+        break;
+
+      case "MIN":
+        m = this.getMin();
+    
+      default:
+        break;
     }
-    finally {
-      this.writeLock.unlock();
-    }
-  }
-
-
-  /**
-   * Call the read function from a machine among the arraylist
-   * This function uses the "min load" algorithm to find a machine
-   * @see MachineInterface#readByMin
-   */
-  @Override
-  public boolean readByMin(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
-
-    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
-    boolean ret = false;
-    // FINDING THE MIN LOAD
-    MachineInterface min = this.getMin();
-    // NOTIFY AND READ
-    this.notifyLoad(min, 1);    // load
-    ret = min.read(filename, c);
-    this.notifyLoad(min, -1);   // unload
-
-    return ret;
-  }
-
-
-  /**
-   * Call the write function from a machine among the arraylist
-   * This function uses the "min load" algorithm to find a machine
-   * @see MachineInterface#write
-   */
-  @Override
-  public boolean writeByMin(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
-
-    boolean ret = false;
-    System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to write in " + filename);
-
-    // FINDING THE MIN LOAD
-    MachineInterface min = this.getMin();
-    // NOTIFY AND READ
-    this.notifyLoad(min, 1);    // load
-    ret = min.write(filename, data, c);
-    this.notifyLoad(min, -1);   // unload
-
-    return ret;
+    return m;
   }
 
   
@@ -218,17 +259,14 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
     
     System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked for hello");
     boolean ret = false;
-    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
     
-    for(MachineInterface m : machinesCopy.keySet()) {
-      // LOOKING FOR FREE LOADED MACHINE
-      if(this.machines.get(m) <= 0) {
-        this.notifyLoad(m, 1);    // load
-        ret = m.hello(name, c);
-        this.notifyLoad(m, -1);   // unload
-        break;
-      }
+    MachineInterface m = getMachine();  // looking for a machine
+    if(m == null) {
+      return false;
     }
+    this.notifyLoad(m, 1);              // load
+    ret = m.hello(name, c);
+    this.notifyLoad(m, -1);             // unload
 
     return ret;
   }
@@ -236,25 +274,21 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
   /**
    * Call the read function from a machine among the arraylist
-   * This function uses the "available or occupied" algorithm when looking for machines
-   * @see MachineInterface#read
+   * @see SwitcherInterface#read(String, ClientInterface)
    */
   @Override
   public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
     System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to read " + filename);
     boolean ret = false;
-    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
     
-    for(MachineInterface m : machinesCopy.keySet()) {
-      // LOOKING FOR FREE LOADED MACHINE
-      if(this.machines.get(m) <= 0) {
-        this.notifyLoad(m, 1);    // load
-        ret = m.read(filename, c);
-        this.notifyLoad(m, -1);   // unload
-        break;
-      }
+    MachineInterface m = this.getMachine();  // looking for a machine
+    if(m == null) {
+      return false;
     }
+    this.notifyLoad(m, 1);                   // load
+    ret = m.read(filename, c);
+    this.notifyLoad(m, -1);                  // unload
 
     return ret;
   }
@@ -262,25 +296,21 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
 
   /**
    * Call the write function from a machine among the arraylist
-   * This function uses the "available or occupied" algorithm when looking for machines
-   * @see MachineInterface#write
+   * @see SwitcherInterface#write(String, byte[], ClientInterface)
    */
   @Override
   public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
     System.out.println("[" + LocalDateTime.now() + "] " + c.getSurname() + " asked to write in " + filename);
     boolean ret = false;
-    HashMap<MachineInterface, Integer> machinesCopy = this.getMachines();   // the copy function is protected by a read lock
 
-    for(MachineInterface m : machinesCopy.keySet()) {
-      // LOOKING FOR FREE LOADED MACHINE
-      if(this.machines.get(m) <= 0) {
-        this.notifyLoad(m, 1);    // load
-        ret = m.write(filename, data, c);
-        this.notifyLoad(m, -1);   // unload
-        break;
-      }
+    MachineInterface m = this.getMachine();   // looking for a machine
+    if(m == null) {
+      return false;
     }
+    this.notifyLoad(m, 1);                    // load
+    ret = m.write(filename, data, c);
+    this.notifyLoad(m, -1);                   // unload
 
     return ret;
   }

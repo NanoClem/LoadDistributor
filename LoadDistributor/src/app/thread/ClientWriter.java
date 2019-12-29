@@ -127,7 +127,7 @@ public class ClientWriter extends Thread {
         long start = System.nanoTime();
 
         try {
-            if(this.stub.writeByMin(filename, data, client)) {
+            if(this.stub.write(filename, data, client)) {
                 System.out.println("Data successfuly writen");
             } else {
                 System.out.println("Write failed");

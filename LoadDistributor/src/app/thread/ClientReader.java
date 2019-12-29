@@ -120,7 +120,7 @@ public class ClientReader extends Thread {
         long start = System.nanoTime();
 
         try {
-            if(this.stub.readByMin(filename, this.client)) {
+            if(this.stub.read(filename, this.client)) {
                 System.out.println(new String(this.client.getReadResponse()));
             } else {
                 System.out.println("Read failed");

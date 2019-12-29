@@ -20,7 +20,7 @@ public class SwitcherServer {
             String url = "rmi://localhost" + ":" + port + "/Switcher";
 
             // REGISTRY
-            Switcher skeleton = new Switcher(1, "Hermes");          // stub for accessing Switcher services
+            Switcher skeleton = new Switcher(1, "Hermes", "AVAILABLE");   // stub for accessing Switcher services
             LocateRegistry.createRegistry(port);                    // create a new registry
             Naming.rebind(url, skeleton);                           // register our stub as "Switcher"
             System.out.println("Switcher waiting on port 10000");
