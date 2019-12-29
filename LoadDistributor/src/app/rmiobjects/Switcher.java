@@ -151,13 +151,13 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   @Override
   public MachineInterface getMin() throws RemoteException {
 
-    this.readLock.lock();
+    this.writeLock.lock();
     try {
       MachineInterface m = Collections.min(this.machines.entrySet(), HashMap.Entry.comparingByValue()).getKey();
       return m;
     }
     finally {
-      this.readLock.unlock();
+      this.writeLock.unlock();
     }
   }
 
