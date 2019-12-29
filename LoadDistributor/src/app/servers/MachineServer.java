@@ -22,23 +22,18 @@ public class MachineServer {
             /* -------------------------------
                 MACHINE SERVER PARAMS
             ------------------------------- */
-            int port          = 10000;
-            String url        = "rmi://localhost" + ":" + port + "/Machine";
+            int n      = 2;
+            int port   = 10000;
+            String url = "rmi://localhost" + ":" + port + "/Machine";
 
             /* ---------------------------------------
                 INITIALISING MACHINES
             --------------------------------------- */
-            // MACHINES
-            Machine m1 = new Machine(1, "Kave");
-            Machine m2 = new Machine(2, "Seb");
-            Machine m3 = new Machine(3, "Sorana");
-            Machine m4 = new Machine(4, "Flavien");
-            // MACHINE LIST
             ArrayList<MachineInterface> mList = new ArrayList<MachineInterface>();
-            mList.add(m1);
-            mList.add(m2);
-            mList.add(m3);
-            mList.add(m4);
+            for(int i=1 ; i<n+1; i++) {
+                Machine m = new Machine(i, "");
+                mList.add(m);
+            }
 
             /* ---------------------------------------
                 INITIALISING STUB

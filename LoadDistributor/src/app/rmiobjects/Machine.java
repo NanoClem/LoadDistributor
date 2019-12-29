@@ -173,9 +173,9 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
         // PARAMS
         boolean ret = false;
         String resp = "";
-        
+
         try {
-            System.out.println("[" + LocalDateTime.now() + "] " + "hello task from " + c.getSurname());
+            System.out.println("[" + LocalDateTime.now() + "] " + "Machine " + this.getId() + ": hello task from " + c.getSurname());
             resp = "Hello " + c.getSurname() + " ! From " + this.getSurname();
             ret = true;
         }
@@ -208,7 +208,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
 
         // READ FILE
         try(FileInputStream fis = new FileInputStream(f)) {
-            System.out.println("[" + LocalDateTime.now() + "] " + "reading task from " + c.getSurname() + ": " + filename);
+            System.out.println("[" + LocalDateTime.now() + "] " + "Machine " + this.getId() + ": reading task from " + c.getSurname() + ": " + filename);
             fis.read(resp);
             fis.close();
             ret = true;
@@ -241,7 +241,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
 
         // WRITE FILE
         try(FileOutputStream fos = new FileOutputStream(filename, true)) {
-            System.out.println("[" + LocalDateTime.now() + "] " + "writing task from " + c.getSurname() + ": " + filename);
+            System.out.println("[" + LocalDateTime.now() + "] " + "Machine " + this.getId() + ":writing task from " + c.getSurname() + ": " + filename);
             if (!f.exists()) {
                 f.createNewFile();
             }
