@@ -202,7 +202,7 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
         this.readLock.lock();
 
         // PARAMS
-        File f      =  new File(filename); //new File(fUrl.getPath());
+        File f      =  new File(filename);
         byte[] resp = new byte[(int) f.length()];
         boolean ret = false;
 

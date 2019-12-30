@@ -20,8 +20,9 @@ public class MultiThreadClientServer {
         /* -------------------------------
             INITIALISING STUB
         ------------------------------- */
-        Registry registry = LocateRegistry.getRegistry(10000);                       // access to registry on port 10000
-        SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // get the "Switcher" object in registry
+        String mode = "MIN";
+        Registry registry = LocateRegistry.getRegistry(10000);                               // access to registry on port 10000
+        SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher/" + mode);    // get the "Switcher" object in registry
 
         /* -------------------------------
             INITIALISING FILES PATH
