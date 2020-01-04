@@ -239,12 +239,14 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
         File f      = new File(filename);
         boolean ret = false;
 
+        if (!f.exists()) {
+            f.createNewFile();
+        }
+
         // WRITE FILE
-        try(FileOutputStream fos = new FileOutputStream(filename, true)) {
+        try(FileOutputStream fos = new FileOutputStream(f, true)) {
             System.out.println("[" + LocalDateTime.now() + "] " + "Machine " + this.getId() + ":writing task from " + c.getSurname() + ": " + filename);
-            if (!f.exists()) {
-                f.createNewFile();
-            }
+            
             String date = "[" + LocalDateTime.now() + "]";
             fos.write(date.getBytes());
             fos.write(data);

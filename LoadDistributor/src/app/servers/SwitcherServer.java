@@ -9,6 +9,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 
 
+
 /**
  * @author NanoClem
  */
@@ -22,7 +23,6 @@ public class SwitcherServer {
             int port    = Integer.parseInt(prop.getProperty("port"));
             String mode = prop.getProperty("mode");
             String url  = prop.getProperty("base_url") + ":" + port + "/Switcher/" + mode;
-            
 
             // REGISTRY
             Switcher skeleton = new Switcher(1, "Hermes", mode);    // stub for accessing Switcher services
