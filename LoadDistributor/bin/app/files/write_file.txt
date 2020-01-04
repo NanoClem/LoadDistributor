@@ -1,8 +1,0 @@
-[2019-12-28T16:05:27.087304600]This is a write test
-[2019-12-28T16:10:30.193022]This is a write test
-[2019-12-28T16:11:27.085613200]This is a write test
-[2019-12-28T16:11:27.674601300]This is a write test
-[2019-12-28T16:11:28.154319900]This is a write test
-[2019-12-28T16:11:28.539420500]This is a write test
-[2019-12-28T16:11:28.930374300]This is a write test
-[2019-12-28T16:11:30.536476800]This is a write test

@@ -11,6 +11,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
+
+
 /**
  * @author NanoClem
  */
@@ -20,14 +22,15 @@ public class MultiThreadClientServer {
         /* -------------------------------
             INITIALISING STUB
         ------------------------------- */
-        Registry registry = LocateRegistry.getRegistry(10000);                       // access to registry on port 10000
-        SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");    // get the "Switcher" object in registry
+        String mode = "MIN";
+        Registry registry = LocateRegistry.getRegistry(10000);                               // access to registry on port 10000
+        SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher/" + mode);    // get the "Switcher" object in registry
 
         /* -------------------------------
             INITIALISING FILES PATH
         ------------------------------- */
         Path currentRelativePath = Paths.get("");
-        String path  = currentRelativePath.toAbsolutePath().toString() + "\\src\\app\\files\\";
+        String path  = currentRelativePath.toAbsolutePath().toString() + "\\src\\app\\files\\tests\\";
         String rFile = path + "read_file.txt";
         String wFile = path + "write_file.txt";
 

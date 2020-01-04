@@ -121,7 +121,12 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public int getLoad() throws RemoteException {
-        return this.load;
+        this.readLock.lock();
+        try {
+            return this.load;
+        } finally {
+            this.readLock.unlock();
+        }
     }
 
     /**
@@ -143,7 +148,12 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
      */
     @Override
     public void addLoad(int l) throws RemoteException {
-        this.load += l;
+        this.writeLock.lock();
+        try {
+            this.load += l;
+        } finally {
+            this.writeLock.unlock();
+        }
     }
 
 
@@ -159,10 +169,13 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     public boolean hello(String name, ClientInterface c) throws RemoteException {
 
         this.readLock.lock();
+
+        // PARAMS
         boolean ret = false;
         String resp = "";
+
         try {
-            System.out.println("[" + LocalDateTime.now() + "] " + "hello task from " + c.getSurname());
+            System.out.println("[" + LocalDateTime.now() + "] " + "Machine " + this.getId() + ": hello task from " + c.getSurname());
             resp = "Hello " + c.getSurname() + " ! From " + this.getSurname();
             ret = true;
         }
@@ -187,14 +200,15 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     public boolean read(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException {
 
         this.readLock.lock();
+
         // PARAMS
-        File f      =  new File(filename); //new File(fUrl.getPath());
+        File f      =  new File(filename);
         byte[] resp = new byte[(int) f.length()];
         boolean ret = false;
 
         // READ FILE
         try(FileInputStream fis = new FileInputStream(f)) {
-            System.out.println("[" + LocalDateTime.now() + "] " + "reading task from " + c.getSurname() + ": " + filename);
+            System.out.println("[" + LocalDateTime.now() + "] " + "Machine " + this.getId() + ": reading task from " + c.getSurname() + ": " + filename);
             fis.read(resp);
             fis.close();
             ret = true;
@@ -220,16 +234,19 @@ public class Machine extends UnicastRemoteObject implements MachineInterface, Se
     public boolean write(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException {
 
         this.writeLock.lock();
+
         // PARAMS
         File f      = new File(filename);
         boolean ret = false;
 
+        if (!f.exists()) {
+            f.createNewFile();
+        }
+
         // WRITE FILE
-        try(FileOutputStream fos = new FileOutputStream(filename, true)) {
-            System.out.println("[" + LocalDateTime.now() + "] " + "writing task from " + c.getSurname() + ": " + filename);
-            if (!f.exists()) {
-                f.createNewFile();
-            }
+        try(FileOutputStream fos = new FileOutputStream(f, true)) {
+            System.out.println("[" + LocalDateTime.now() + "] " + "Machine " + this.getId() + ":writing task from " + c.getSurname() + ": " + filename);
+            
             String date = "[" + LocalDateTime.now() + "]";
             fos.write(date.getBytes());
             fos.write(data);

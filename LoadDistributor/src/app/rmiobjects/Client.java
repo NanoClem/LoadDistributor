@@ -53,6 +53,15 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Seri
         this.id = num;
         this.surname = name;
     }
+    
+    /**
+     * CONSTRUCTOR OVERLOADING FOR DEFAULT PARAMETERS
+     * @param num
+     * @throws RemoteException
+     */
+    public Client(int num) throws RemoteException {
+        this(num, "");
+    }
 
     /**
      * Set a new id for the client

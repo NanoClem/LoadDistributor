@@ -1,6 +1,6 @@
 package app.servers;
 
-import app.interfaces.MachineInterface;
+import app.files.config.MyProperties;
 import app.interfaces.SwitcherInterface;
 import app.rmiobjects.Machine;
 
@@ -8,7 +8,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
 
 
 
@@ -20,39 +19,32 @@ public class MachineServer {
     public static void main(String[] args) {
         try {
             /* -------------------------------
+                LOAD PROPERTIES
+            ------------------------------- */
+            MyProperties prop = new MyProperties();
+            
+            /* -------------------------------
                 MACHINE SERVER PARAMS
             ------------------------------- */
-            int port          = 10000;
-            String url        = "rmi://localhost" + ":" + port + "/Machine";
-
-            /* ---------------------------------------
-                INITIALISING MACHINES
-            --------------------------------------- */
-            // MACHINES
-            Machine m1 = new Machine(1, "Kave");
-            Machine m2 = new Machine(2, "Seb");
-            // Machine m3 = new Machine(3, "Sorana");
-            // MACHINE LIST
-            ArrayList<MachineInterface> mList = new ArrayList<MachineInterface>();
-            mList.add(m1);
-            mList.add(m2);
-            // mList.add(m3);
+            int n      = 2;
+            int port   = Integer.parseInt(prop.getProperty("port"));
+            String url = prop.getProperty("base_url") + ":" + port + "/Machine";
 
             /* ---------------------------------------
                 INITIALISING STUB
             --------------------------------------- */
+            String mode = "MIN";
             Registry registry = LocateRegistry.getRegistry(port);   // get existing registry
-            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");
+            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher/" + mode);
 
             /* ---------------------------------------
-                BIND MACHINES ON REGISTRY & SWITCHER
+                INITIALISING MACHINES AND BIND
             --------------------------------------- */
-            for(MachineInterface msklt : mList) {
-                // BIND ON REGISTRY
-                registry.rebind(url + "/" + msklt.getSurname(), msklt);
-                // ADD IT TO THE LIST IN THE SWITCHER
-                stub.addMachine(msklt);
-                System.out.println("Machine waiting on port 10000");
+            for(int i=1 ; i<n+1; i++) {
+                Machine m = new Machine(i, "");
+                registry.rebind(url + "/" + m.getSurname(), m);     // bind on registry
+                stub.addMachine(m);                                 // add it to the container in switcher
+                System.out.println("Machine waiting on port " + port);
             }
 
         } catch (RemoteException e) {

@@ -1,7 +1,5 @@
 package app.interfaces;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
@@ -11,6 +9,12 @@ import java.util.HashMap;
  * 
  */
 public interface SwitcherInterface extends OperationsInterface, ControlInterface, NotifyInterface {
+
+  /**
+   * Log a connection message
+   * @throws RemoteException
+   */
+  public void check(ClientInterface c) throws RemoteException;
 
   /**
    * @return switcher's id
@@ -25,10 +29,10 @@ public interface SwitcherInterface extends OperationsInterface, ControlInterface
   public String getSurname() throws RemoteException;
 
   /**
-   * Print a verification message
+   * @return the switcher's mode
    * @throws RemoteException
    */
-  public void check(ClientInterface c) throws RemoteException;
+  public String getMode() throws RemoteException;
 
   /**
    * @return a shallow copy of the machines container
@@ -37,25 +41,9 @@ public interface SwitcherInterface extends OperationsInterface, ControlInterface
   public HashMap<MachineInterface, Integer> getMachines() throws RemoteException;
 
   /**
-   * read function with minimum load selection
-   * @param filename
-   * @param c
-   * @return
+   * Get the machine which has the better load depending on the chosen mode
+   * @return the selected machine under the mode
    * @throws RemoteException
-   * @throws IOException
-   * @throws FileNotFoundException
    */
-  public boolean readByMin(String filename, ClientInterface c) throws RemoteException, IOException, FileNotFoundException;
-
-  /**
-   * write function with minimum load selection
-   * @param filename
-   * @param data
-   * @param c
-   * @return
-   * @throws RemoteException
-   * @throws IOException
-   * @throws FileNotFoundException
-   */
-  public boolean writeByMin(String filename, byte[] data, ClientInterface c) throws RemoteException, IOException, FileNotFoundException;
+  public MachineInterface getMachine() throws RemoteException;
 }
