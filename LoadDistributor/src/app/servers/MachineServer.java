@@ -33,9 +33,8 @@ public class MachineServer {
             /* ---------------------------------------
                 INITIALISING STUB
             --------------------------------------- */
-            String mode = "MIN";
             Registry registry = LocateRegistry.getRegistry(port);   // get existing registry
-            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher/" + mode);
+            SwitcherInterface stub = (SwitcherInterface) registry.lookup("Switcher");
 
             /* ---------------------------------------
                 INITIALISING MACHINES AND BIND
@@ -46,7 +45,6 @@ public class MachineServer {
                 stub.addMachine(m);                                 // add it to the container in switcher
                 System.out.println("Machine waiting on port " + port);
             }
-
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {

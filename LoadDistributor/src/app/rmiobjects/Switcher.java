@@ -115,7 +115,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherInterface, 
   /**
    * Get the first available machine.
    * A load of 0 correspond to an available machine, 1 to occupied.
-   * If all machines are occupied, it will try until one gets free.
+   * If all machines are occupied, it will try until the max tries value is scored.
    * @return the first available machine
    * @throws RemoteException
    */

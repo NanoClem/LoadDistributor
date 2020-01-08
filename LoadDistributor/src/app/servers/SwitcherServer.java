@@ -22,7 +22,7 @@ public class SwitcherServer {
             // SERVER PARAMS
             int port    = Integer.parseInt(prop.getProperty("port"));
             String mode = prop.getProperty("mode");
-            String url  = prop.getProperty("base_url") + ":" + port + "/Switcher/" + mode;
+            String url  = prop.getProperty("base_url") + ":" + port + "/Switcher";
 
             // REGISTRY
             Switcher skeleton = new Switcher(1, "Hermes", mode);    // stub for accessing Switcher services
