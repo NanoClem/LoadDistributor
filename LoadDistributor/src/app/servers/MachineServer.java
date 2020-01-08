@@ -26,7 +26,7 @@ public class MachineServer {
             /* -------------------------------
                 MACHINE SERVER PARAMS
             ------------------------------- */
-            int n      = 2;
+            int n      = Integer.parseInt(prop.getProperty("amount"));
             int port   = Integer.parseInt(prop.getProperty("port"));
             String url = prop.getProperty("base_url") + ":" + port + "/Machine";
 
