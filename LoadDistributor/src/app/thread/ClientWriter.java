@@ -34,6 +34,18 @@ public class ClientWriter extends ClientThread {
 
 
     /**
+     * CONSTRUCTOR OVERLOAD for default name
+     * @param id
+     * @param wFilename
+     * @param s
+     * @throws RemoteException
+     */
+    public ClientWriter(int id, String wFilename, SwitcherInterface s) throws RemoteException {
+        this(id, "", wFilename, s);
+    }
+
+
+    /**
      * Thread run function
      */
     public void run() {

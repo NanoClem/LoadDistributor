@@ -35,6 +35,18 @@ public class ClientReader extends ClientThread {
 
 
     /**
+     * CONSTRUCTOR OVERLOAD for default name
+     * @param id
+     * @param rFilename
+     * @param s
+     * @throws RemoteException
+     */
+    public ClientReader(int id, String rFilename, SwitcherInterface s) throws RemoteException {
+        this(id, "", rFilename, s);
+    }
+
+
+    /**
      * Thread run function
      */
     public void run() {

@@ -22,20 +22,25 @@ public class ClientReaderWriter extends ClientThread {
     private String writeFile;
 
 
-    /**
-     * CONSTRUCTOR
-     * 
-     * @param id
-     * @param name
-     * @param port
-     * @throws RemoteException
-     * @throws NotBoundException
-     */
+    
     public ClientReaderWriter(int id, String name, String rFilename, String wFilename, SwitcherInterface s) throws RemoteException {
         super(id, name, s);
         this.profile = "read_write";
         this.readFile  = rFilename;
         this.writeFile = wFilename;
+    }
+
+
+    /**
+     * CONSTRUCTOR OVERLOAD for default name
+     * @param id
+     * @param rFilename
+     * @param wFilename
+     * @param s
+     * @throws RemoteException
+     */
+    public ClientReaderWriter(int id, String rFilename, String wFilename, SwitcherInterface s) throws RemoteException {
+        this(id, "", rFilename, wFilename, s);
     }
 
 
