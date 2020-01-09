@@ -12,3 +12,6 @@
 
 # Java
 *.class
+
+*.csv
+write_file.txt

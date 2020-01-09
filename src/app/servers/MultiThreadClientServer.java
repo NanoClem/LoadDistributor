@@ -39,13 +39,15 @@ public class MultiThreadClientServer {
          // CLIENTS
         ClientReader reader1     = new ClientReader(1, "Paul", rFile, stub);
         ClientReader reader2     = new ClientReader(2, "Maria", rFile, stub);
-        ClientWriter writer      = new ClientWriter(3, "Patrick", wFile, stub);
-        ClientReaderWriter both  = new ClientReaderWriter(4, "Hector", rFile, wFile, stub);
+        ClientWriter writer1     = new ClientWriter(3, "Patrick", wFile, stub);
+        ClientWriter writer2     = new ClientWriter(4, "Ophelia", wFile, stub);
+        ClientReaderWriter both  = new ClientReaderWriter(5, "Hector", rFile, wFile, stub);
         // THREAD LIST
         ArrayList<Thread> tList = new ArrayList<Thread>();
         tList.add(reader1);
         tList.add(reader2);
-        tList.add(writer);
+        tList.add(writer1);
+        tList.add(writer2);
         tList.add(both);
         
         /* -------------------------------
