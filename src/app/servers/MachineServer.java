@@ -28,7 +28,6 @@ public class MachineServer {
             ------------------------------- */
             int n      = Integer.parseInt(prop.getProperty("amount"));
             int port   = Integer.parseInt(prop.getProperty("port"));
-            String url = prop.getProperty("base_url") + ":" + port + "/Machine";
 
             /* ---------------------------------------
                 INITIALISING STUB
@@ -41,7 +40,6 @@ public class MachineServer {
             --------------------------------------- */
             for(int i=1 ; i<n+1; i++) {
                 Machine m = new Machine(i, "");
-                registry.rebind(url + "/" + m.getSurname(), m);     // bind on registry
                 stub.addMachine(m);                                 // add it to the container in switcher
                 System.out.println("Machine waiting on port " + port);
             }
